@@ -4,7 +4,7 @@ import DataGrid from './Table/DataTable';
 function App() {
   return (
     <div className="App">
-      <DataGrid />
+      <DataGrid  />
     </div>
   );
 }
