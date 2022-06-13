@@ -4,6 +4,8 @@ import "./DataTable.css";
 import TextField from "@mui/material/TextField";
 import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
+import fileDownload from "js-file-download";
+import axios from "axios";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -92,8 +94,6 @@ const DataTable = () => {
 
   const fetchTableFamily = async () => {
     var url = new URL(baseuri + "families");
-
-    console.log("const fetchTableFamily = async ()");
 
     await fetch(url)
       .then((data) => data.json())
@@ -243,7 +243,7 @@ const DataTable = () => {
   };
 
   const PreviewImage = async (e) => {
-    console.log(e.row.IMG_SYM);
+    //console.log(e.row.IMG_SYM);
     setSymbolImage(e.row.IMG_SYM);
   };
 
@@ -297,6 +297,25 @@ const DataTable = () => {
     }
   };
 
+  const handleDownload = async () =>{
+    axios({
+      url: baseuri + "filename",
+      params: {
+        id:selectionModel[0]
+      }
+    }).then((response0) => {
+      axios({
+        url: baseuri + "download",
+        responseType: 'blob',
+        params: {
+          id:selectionModel[0]
+        }
+      }).then((response1) => {
+        fileDownload(response1.data, response0.data);
+      });
+    });    
+  }
+
   return (
     <div style={{ margin: "10px" }}>
       <div className="area_menu">
@@ -316,8 +335,7 @@ const DataTable = () => {
           onChange={handleValueChange}
           value={searchKeyword}
         />
-        {/* <TextField style={{ margin: "0px 10px 10px 20px" }} id="outlined-basic" placeholder="검색어 입력" />
-        <button style={{ height: "30px", margin: "5px" }} onClick={handleSearchFamily}>
+        {/* <button style={{ height: "30px", margin: "5px" }} >
           검색
         </button> */}
       </div>
@@ -331,6 +349,9 @@ const DataTable = () => {
           >
             Family
           </div>
+            <button style={{ height: "25px", float: "right", margin: "5px" }} onClick={handleDownload}>
+              download
+            </button>
           <div style={{ height: "100%" }}>
             <DataGrid
               rows={dataFamily}
