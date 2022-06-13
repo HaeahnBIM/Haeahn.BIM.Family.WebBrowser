@@ -1,0 +1,69 @@
+.area_menu {    
+    display: block;
+    height: 50px;
+    padding: 10px;
+}
+
+.area_grid {
+    display: flex;
+    height: 100%;
+}
+
+.area_left {
+    width: 50%; 
+    background: green;
+    height: 500px;
+}
+
+.area_right {
+    display: inline-block;
+    flex-grow: 1;
+    height: 500px;
+}
+
+.buttonArea {    
+    display: block;
+    float: right;
+}
+
+.area_button_grid {    
+    display: block;
+    height: 30px;
+}
+
+.button {
+    width: 100px;
+    height: 30px;
+}
+
+.title_grid {
+    text-align: start;
+}
+
+.button_inside {
+    width: 80px;
+    height: 30px;
+    float: right;
+}
+
+.area_grid0 {    
+    width: 100%;
+    display: inline-block;
+    border: 1px solid rgb(47, 0, 255);
+    margin: 0px 30px 20px 0px;
+}
+
+.area_grid1 {    
+    display: block;
+    border: 1px solid rgb(47, 0, 255);
+}
+
+.area_grid2 {   
+    display: block;
+    border: 1px solid rgb(47, 0, 255);
+}
+
+.grid {
+    height: 48%;
+    display: flex;
+}
