@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import PropTypes from "prop-types";
+import Button from "@mui/material/Button";
 import "./DataTable.css";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
@@ -11,93 +13,34 @@ import axios from "axios";
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
 const columnsFamily = [
-  { field: "SEQ", headerName: "ID", width: 80 },
-  //{
-  //  field: "ID_REL_FILE",
-  //  headerName: "ID_REL_FILE",
-  //  width: 120,
-  //},
-  {
-    field: "NM_CATG",
-    headerName: "NM_CATG",
-    width: 120,
-  },
-  {
-    field: "NM_FML",
-    headerName: "NM_FML",
-    width: 300,
-  },
-  {
-    field: "TotalCount",
-    headerName: "총 유리개수",
-    width: 100,
-  },
-  {
-    field: "ElevCount",
-    headerName: "유리 짝",
-    width: 100,
-  },
-  {
-    field: "HorzCount",
-    headerName: "가로개수",
-    width: 100,
-  },
-  {
-    field: "VertCount",
-    headerName: "세로개수",
-    width: 100,
-  },
-  {
-    field: "IsDouble",
-    headerName: "이중창",
-    width: 100,
-  },
+  { field: "SEQ", headerName: "ID", width: 60 },
+  { field: "NM_CATG", headerName: "NM_CATG", width: 100 },
+  { field: "NM_FML", headerName: "NM_FML", width: 250 },
+  { field: "TotalCount", headerName: "총 유리개수", width: 100 },
+  { field: "ElevCount", headerName: "유리 짝", width: 100 },
+  { field: "HorzCount", headerName: "가로개수", width: 100 },
+  { field: "VertCount", headerName: "세로개수", width: 100 },
+  { field: "IsDouble", headerName: "이중창", width: 100 },
+  { field: "IsCorner", headerName: "코너", width: 100 },
+  { field: "CountLike", headerName: "좋아요", width: 80 },
+  { field: "CountDown", headerName: "다운로드", width: 80 },
+  { field: "CountReport", headerName: "오류신고", width: 80 },
+  { field: "IsNG", headerName: "품질", width: 80 }
 ];
 
 const columnsSymbol = [
   { field: "SEQ", headerName: "ID", width: 60 },
-  {
-    field: "ID_REL_FML",
-    headerName: "ID_REL_FML",
-    width: 120,
-    hide: true,
-  },
-  {
-    field: "NM_SYM",
-    headerName: "NM_SYM",
-    width: 250,
-  },
-  {
-    field: "IMG_SYM",
-    headerName: "IMG_SYM",
-    width: 300,
-    hide: true,
-  },
+  { field: "ID_REL_FML", headerName: "ID_REL_FML", width: 120, hide: true },
+  { field: "NM_SYM", headerName: "NM_SYM", width: 250 },
+  { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
 ];
 
 const columnsSameFamily = [
   { field: "SEQ", headerName: "ID", width: 80 },
-  {
-    field: "NM_CATG",
-    headerName: "NM_CATG",
-    width: 120,
-  },
-  {
-    field: "NM_FML",
-    headerName: "NM_FML",
-    width: 300,
-  },
-  {
-    field: "VOL",
-    headerName: "VOL",
-    width: 300,
-  },
-  {
-    field: "IMG_SYM",
-    headerName: "IMG_SYM",
-    width: 300,
-    hide: true,
-  },
+  { field: "NM_CATG", headerName: "NM_CATG", width: 120 },
+  { field: "NM_FML", headerName: "NM_FML", width: 300 },
+  { field: "VOL", headerName: "VOL", width: 300 },
+  { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
 ];
 
 const columnsParameter = [
@@ -409,6 +352,8 @@ const DataTable = () => {
         responseType: "blob",
         params: {
           id: selectionModel[0],
+          userid: "20211201",
+          platform: "WEB",
         },
       }).then((response1) => {
         fileDownload(response1.data, response0.data);
@@ -509,11 +454,10 @@ const DataTable = () => {
   };
 
   const handleDelete = async () => {
-
     let families = [];
     for (let i = 0; i < selectionSameModel.length; i++) {
       const family = selectionSameModel[i];
-      families.push('' + family);
+      families.push("" + family);
     }
 
     try {
@@ -533,6 +477,59 @@ const DataTable = () => {
       fetchTableFamily();
       setSameFamily([]);
       setSymbol([]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleReport = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+      TYP: "CATEGORY",
+    };
+
+    console.log(postData)
+
+    try {
+      const res = await fetch(baseuri + "report", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLike = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+    };
+
+    console.log(postData)
+
+    try {
+      const res = await fetch(baseuri + "like", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -620,7 +617,7 @@ const DataTable = () => {
         </div>
       </div>
       <div style={{ display: "flex", height: "800px" }}>
-        <div style={{ width: "60%", margin: "0px 20px 0px 0px" }}>
+        <div style={{ width: "75%", margin: "0px 20px 0px 0px" }}>
           <div
             style={{
               height: "40px",
@@ -634,6 +631,18 @@ const DataTable = () => {
             onClick={handleDownload}
           >
             download
+          </button>
+          <button
+            style={{ height: "25px", float: "right", margin: "5px" }}
+            onClick={handleReport}
+          >
+            report
+          </button>
+          <button
+            style={{ height: "25px", float: "right", margin: "5px" }}
+            onClick={handleLike}
+          >
+            like
           </button>
           <div style={{ height: "50%", margin: "0px 0px 20px 0px" }}>
             <DataGrid
