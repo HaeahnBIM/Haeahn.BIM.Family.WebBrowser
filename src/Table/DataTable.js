@@ -25,7 +25,7 @@ const columnsFamily = [
   { field: "CountLike", headerName: "좋아요", width: 80 },
   { field: "CountDown", headerName: "다운로드", width: 80 },
   { field: "CountReport", headerName: "오류신고", width: 80 },
-  { field: "IsNG", headerName: "품질", width: 80 }
+  { field: "IsNG", headerName: "품질", width: 80 },
 ];
 
 const columnsSymbol = [
@@ -341,6 +341,7 @@ const DataTable = () => {
   };
 
   const handleDownload = async () => {
+
     axios({
       url: baseuri + "filename",
       params: {
@@ -391,6 +392,15 @@ const DataTable = () => {
 
   const handleClickSearch = () => {
     handleSearch();
+  };
+
+  const handleClickUser = (event) => {
+    console.log("/User");
+    window.open(
+      "./User",
+      "_blank",
+      "location=yes,height=850,width=1140,left=0,location=0,scrollbars=yes,status=yes"
+    );
   };
 
   const handleSearch = async (e) => {
@@ -482,17 +492,17 @@ const DataTable = () => {
     }
   };
 
-  const handleReport = async (e) => {
+  const handleSetReport = async (e) => {
     const postData = {
       ID: selectionModel[0],
       USERID: "20211201",
       TYP: "CATEGORY",
     };
 
-    console.log(postData)
+    console.log(postData);
 
     try {
-      const res = await fetch(baseuri + "report", {
+      const res = await fetch(baseuri + "addReport", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -515,7 +525,7 @@ const DataTable = () => {
       USERID: "20211201",
     };
 
-    console.log(postData)
+    console.log(postData);
 
     try {
       const res = await fetch(baseuri + "like", {
@@ -533,6 +543,119 @@ const DataTable = () => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleAddFavorite = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+    };
+
+    console.log(postData);
+
+    try {
+      const res = await fetch(baseuri + "addFavorite", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteFavorite = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+    };
+
+    console.log(postData);
+
+    try {
+      const res = await fetch(baseuri + "deleteFavorite", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleAddCart = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+    };
+
+    console.log(postData);
+
+    try {
+      const res = await fetch(baseuri + "addCart", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteCart = async (e) => {
+    const postData = {
+      ID: selectionModel[0],
+      USERID: "20211201",
+    };
+
+    console.log(postData);
+
+    try {
+      const res = await fetch(baseuri + "deleteCart", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleClickReport = (event) => {
+    console.log("/Report");
+    window.open(
+      "./Report",
+      "_blank",
+      "location=yes,height=850,width=1140,left=0,location=0,scrollbars=yes,status=yes"
+    );
   };
 
   return (
@@ -614,6 +737,18 @@ const DataTable = () => {
           >
             검색
           </button>
+          <button
+            style={{ height: "30px", margin: "5px", width: "80px" }}
+            onClick={handleClickUser}
+          >
+            내 정보
+          </button>
+          <button
+            style={{ height: "30px", margin: "5px", width: "80px" }}
+            onClick={handleClickReport}
+          >
+            신고목록
+          </button>
         </div>
       </div>
       <div style={{ display: "flex", height: "800px" }}>
@@ -634,7 +769,7 @@ const DataTable = () => {
           </button>
           <button
             style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleReport}
+            onClick={handleSetReport}
           >
             report
           </button>
@@ -644,6 +779,18 @@ const DataTable = () => {
           >
             like
           </button>
+          <button
+            style={{ height: "25px", float: "right", margin: "5px" }}
+            onClick={handleAddFavorite}
+          >
+            add favorite
+          </button>
+          <button
+            style={{ height: "25px", float: "right", margin: "5px" }}
+            onClick={handleDeleteFavorite}
+          >
+            delete favorite
+          </button>
           <div style={{ height: "50%", margin: "0px 0px 20px 0px" }}>
             <DataGrid
               rows={dataFamily}
@@ -652,6 +799,7 @@ const DataTable = () => {
               rowHeight={35}
               rowsPerPageOptions={[100]}
               onRowClick={handlePreviewImageAndSameData}
+              //checkboxSelection
               onSelectionModelChange={(newSelectionModel) => {
                 setSelectionModel(newSelectionModel);
               }}
