@@ -9,6 +9,7 @@ import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
 import fileDownload from "js-file-download";
 import axios from "axios";
+import { Divider, Stack } from "@mui/material";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -68,6 +69,8 @@ const columnsRelation = [
   { field: "DTL_REL", headerName: "DTL_REL", width: 150 },
   { field: "IS_USE", headerName: "IS_USE", width: 150 },
 ];
+
+const _rowHeight = 30;
 
 const DataTable = () => {
   const [dataFamily, setFamily] = useState([]);
@@ -341,7 +344,6 @@ const DataTable = () => {
   };
 
   const handleDownload = async () => {
-
     axios({
       url: baseuri + "filename",
       params: {
@@ -660,269 +662,233 @@ const DataTable = () => {
 
   return (
     <div style={{ margin: "10px" }}>
-      <div
-        className="area_menu"
-        style={{
-          width: "100%",
-          margin: "10px 10px 10px 0px",
-          height: "50px",
-          display: "inline-block",
-          verticalAlign: "middle",
-        }}
-      >
-        <div
-          style={{
-            height: "30px",
-            display: "inline-block",
-            verticalAlign: "middle",
-          }}
+      <main>
+        <Stack
+          direction={"row"}
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={2}
         >
-          패밀리 브라우저
-        </div>
-        <div>
-          총 유리개수
-          <TextField
-            style={{ margin: "0px 30px 0px 10px", width: "100px" }}
-            id="search-total"
-            type="text"
-            variant="standard"
-            value={searchTotal}
-            onChange={handleChangeTotal}
-          />
-          유리짝 수
-          <TextField
-            style={{ margin: "0px 30px 0px 10px", width: "100px" }}
-            id="search-elev"
-            type="text"
-            variant="standard"
-            value={searchElev}
-            onChange={handleChangeElev}
-          />
-          가로개수
-          <TextField
-            style={{ margin: "0px 30px 0px 10px", width: "100px" }}
-            id="search-horz"
-            type="text"
-            variant="standard"
-            value={searchHorz}
-            onChange={handleChangeHorz}
-          />
-          세로개수
-          <TextField
-            style={{ margin: "0px 30px 0px 10px", width: "100px" }}
-            id="search-vert"
-            type="text"
-            variant="standard"
-            value={searchVert}
-            onChange={handleChangeVert}
-          />
-          이중창 | 전체
-          <Checkbox
-            style={{ margin: "0px 30px 0px 10px" }}
-            id="search-double"
-            value={searchDoubleAll}
-            checked={searchDoubleAll}
-            onChange={handleChangeDoubleAll}
-          />
-          이중창
-          <Checkbox
-            style={{ margin: "0px 30px 0px 10px" }}
-            id="search-double"
-            value={searchDouble}
-            onChange={handleChangeDouble}
-          />
-          <button
-            style={{ height: "30px", margin: "5px", width: "80px" }}
-            onClick={handleClickSearch}
-          >
-            검색
-          </button>
-          <button
-            style={{ height: "30px", margin: "5px", width: "80px" }}
-            onClick={handleClickUser}
-          >
-            내 정보
-          </button>
-          <button
-            style={{ height: "30px", margin: "5px", width: "80px" }}
-            onClick={handleClickReport}
-          >
-            신고목록
-          </button>
-        </div>
-      </div>
-      <div style={{ display: "flex", height: "800px" }}>
-        <div style={{ width: "75%", margin: "0px 20px 0px 0px" }}>
-          <div
-            style={{
-              height: "40px",
-              display: "inline-block",
-            }}
-          >
-            Family
-          </div>
-          <button
-            style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleDownload}
-          >
-            download
-          </button>
-          <button
-            style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleSetReport}
-          >
-            report
-          </button>
-          <button
-            style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleLike}
-          >
-            like
-          </button>
-          <button
-            style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleAddFavorite}
-          >
-            add favorite
-          </button>
-          <button
-            style={{ height: "25px", float: "right", margin: "5px" }}
-            onClick={handleDeleteFavorite}
-          >
-            delete favorite
-          </button>
-          <div style={{ height: "50%", margin: "0px 0px 20px 0px" }}>
-            <DataGrid
-              rows={dataFamily}
-              columns={columnsFamily}
-              getRowId={(row) => row.SEQ}
-              rowHeight={35}
-              rowsPerPageOptions={[100]}
-              onRowClick={handlePreviewImageAndSameData}
-              //checkboxSelection
-              onSelectionModelChange={(newSelectionModel) => {
-                setSelectionModel(newSelectionModel);
-              }}
-              selectionModel={selectionModel}
-            />
-          </div>
-          <div style={{ margin: "0px 0px 20px 0px" }}>
-            Equal Volume
-            <button
-              style={{ height: "25px", float: "right", margin: "5px" }}
-              onClick={onRemove}
-            >
-              delete
-            </button>
-          </div>
+          <Stack spacing={2}>
+            <div>
+              총 유리개수
+              <TextField
+                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                id="search-total"
+                type="text"
+                variant="standard"
+                value={searchTotal}
+                onChange={handleChangeTotal}
+              />
+            </div>
+            <div>
+              유리짝 수
+              <TextField
+                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                id="search-elev"
+                type="text"
+                variant="standard"
+                value={searchElev}
+                onChange={handleChangeElev}
+              />
+            </div>
+            <div>
+              가로개수
+              <TextField
+                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                id="search-horz"
+                type="text"
+                variant="standard"
+                value={searchHorz}
+                onChange={handleChangeHorz}
+              />
+            </div>
+            <div>
+              세로개수
+              <TextField
+                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                id="search-vert"
+                type="text"
+                variant="standard"
+                value={searchVert}
+                onChange={handleChangeVert}
+              />
+            </div>
+            <div>이중창</div>
+            <div>
+              이중창 | 전체
+              <Checkbox
+                style={{ margin: "0px 30px 0px 10px" }}
+                id="search-double"
+                value={searchDoubleAll}
+                checked={searchDoubleAll}
+                onChange={handleChangeDoubleAll}
+              />
+            </div>
+            <div>
+              이중창
+              <Checkbox
+                style={{ margin: "0px 30px 0px 10px" }}
+                id="search-double"
+                value={searchDouble}
+                onChange={handleChangeDouble}
+              />
+            </div>
+          </Stack>
 
-          <div style={{ height: "45%" }}>
-            <DataGrid
-              rows={dataSameFamily}
-              columns={columnsSameFamily}
-              getRowId={(row) => row.SEQ}
-              rowHeight={35}
-              rowsPerPageOptions={[100]}
-              onRowClick={handlePreviewImage}
-              checkboxSelection
-              //checkboxSelection={checkboxSelection}
-              onSelectionModelChange={(sel) => {
-                setSelectionSameModel(sel);
-              }}
-              selectionModel={selectionSameModel}
-            />
-          </div>
-        </div>
-        <div
-          style={{
-            flexGrow: "0.3",
-            height: "auto",
-            margin: "0px 20px 0px 0px",
-          }}
-        >
-          <div style={{ height: "auto" }}>
-            <div
-              style={{
-                height: "40px",
-                display: "inline-block",
-              }}
+          <Stack
+            width="100%"
+            height="1050px"
+            direction={"column"}
+            divider={<Divider orientation="horizontal" flexItem />}
+            spacing={2}
+          >
+            <Stack
+              direction={"row"}
+              spacing={2}
+              display="flex"
+              justifyContent="flex-end"
             >
-              Symbol
-            </div>
-            <div style={{ height: "370px", margin: "0px 0px 20px 0px" }}>
-              <DataGrid
-                getRowId={(row) => row.SEQ}
-                rows={dataSymbol}
-                columns={columnsSymbol}
-                rowHeight={35}
-                pageSize={100}
-              />
-            </div>
-            <div
-              style={{
-                height: "370px",
-                display: "inline-block",
-                margin: "0px 20px 0px 0px",
-              }}
+              <button
+                style={{ height: "30px", margin: "5px", width: "80px" }}
+                onClick={handleClickSearch}
+              >
+                검색
+              </button>
+              <button
+                style={{ height: "30px", margin: "5px", width: "80px" }}
+                onClick={handleClickUser}
+              >
+                내 정보
+              </button>
+              <button
+                style={{ height: "30px", margin: "5px", width: "80px" }}
+                onClick={handleClickReport}
+              >
+                신고목록
+              </button>
+            </Stack>
+
+            <Stack
+              height="80%"
+              style={{ margin: "10px" }}
+              direction={"row"}
+              divider={<Divider orientation="vertical" flexItem />}
+              spacing={2}
             >
-              <p>Family</p>
-              <img
-                src={`data:image/png;base64,${dataSymbolImage}`}
-                width="200"
-                height="200"
-                alt=""
-              />
-            </div>
-            <div style={{ height: "370px", display: "inline-block" }}>
-              <p>Same Family</p>
-              <img
-                src={`data:image/png;base64,${dataSymbolImage2}`}
-                width="200"
-                height="200"
-                alt=""
-              />
-            </div>
-          </div>
-        </div>
-        {/* <div style={{ flexGrow: "1", height: "auto" }}>
-          <div style={{ height: "auto" }}>
-            <div
-              style={{
-                height: "40px",
-                display: "inline-block",
-              }}
-            >
-              Parameters
-            </div>
-            <div style={{ height: "370px", margin: "0px 0px 20px 0px" }}>
-              <DataGrid
-                getRowId={(row) => row.SEQ}
-                rows={dataParameter}
-                columns={columnsParameter}
-                rowHeight={35}
-                pageSize={100}
-              />
-            </div>
-            <div
-              style={{
-                height: "40px",
-                display: "inline-block",
-              }}
-            >
-              Relations
-            </div>
-            <div style={{ height: "370px" }}>
-              <DataGrid
-                getRowId={(row) => row.SEQ}
-                rows={dataRelation}
-                columns={columnsRelation}
-                rowHeight={35}
-                pageSize={100}
-              />
-            </div>
-          </div>
-        </div> */}
-      </div>
+              <Stack width="80%" height="100%" direction={"column"} spacing={2}>
+                <span style={{ margin: "5px" }}>Family</span>
+                <Stack
+                  direction={"row"}
+                  spacing={2}
+                  display="flex"
+                  justifyContent="flex-end"
+                >
+                  <button style={{ height: "25px" }} onClick={handleDownload}>
+                    download
+                  </button>
+                  <button style={{ height: "25px" }} onClick={handleSetReport}>
+                    report
+                  </button>
+                  <button style={{ height: "25px" }} onClick={handleLike}>
+                    like
+                  </button>
+                  <button
+                    style={{ height: "25px" }}
+                    onClick={handleAddFavorite}
+                  >
+                    add favorite
+                  </button>
+                  <button
+                    style={{ height: "25px" }}
+                    onClick={handleDeleteFavorite}
+                  >
+                    delete favorite
+                  </button>
+                </Stack>
+                <DataGrid 
+                  rows={dataFamily}
+                  columns={columnsFamily}
+                  getRowId={(row) => row.SEQ}
+                  rowHeight={_rowHeight}
+                  rowsPerPageOptions={[100]}
+                  onRowClick={handlePreviewImageAndSameData}
+                  //checkboxSelection
+                  onSelectionModelChange={(newSelectionModel) => {
+                    setSelectionModel(newSelectionModel);
+                  }}
+                  selectionModel={selectionModel}
+                />
+
+                <span style={{ margin: "10px 5px 5px 5px" }}>Equal Volume</span>
+
+                <Stack
+                  direction={"row"}
+                  spacing={2}
+                  display="flex"
+                  justifyContent="flex-end"
+                >
+                  <button onClick={onRemove} style={{ height: "25px" }}>
+                    delete
+                  </button>
+                </Stack>
+
+                <DataGrid
+                  rows={dataSameFamily}
+                  columns={columnsSameFamily}
+                  getRowId={(row) => row.SEQ}
+                  rowHeight={_rowHeight}
+                  rowsPerPageOptions={[100]}
+                  onRowClick={handlePreviewImage}
+                  checkboxSelection
+                  //checkboxSelection={checkboxSelection}
+                  onSelectionModelChange={(sel) => {
+                    setSelectionSameModel(sel);
+                  }}
+                  selectionModel={selectionSameModel}
+                />
+              </Stack>
+
+              <Stack direction={"column"} spacing={2}>
+                <span style={{ margin: "5px" }}>Type</span>
+                <DataGrid
+                  getRowId={(row) => row.SEQ}
+                  rows={dataSymbol}
+                  columns={columnsSymbol}
+                  rowHeight={_rowHeight}
+                  pageSize={100}
+                />
+                <span style={{ margin: "5px" }}>Patameter</span>
+                <DataGrid
+                  getRowId={(row) => row.SEQ}
+                  rows={dataParameter}
+                  columns={columnsParameter}
+                  rowHeight={_rowHeight}
+                  pageSize={100}
+                />
+
+                <span style={{ margin: "10px 5px 5px 5px" }}>
+                  Similar Family
+                </span>
+
+                <Stack height="20%" direction={"row"} spacing={2}>
+                  <img
+                    src={`data:image/png;base64,${dataSymbolImage}`}
+                    width="150"
+                    height="150"
+                    alt=""
+                  />
+                  <img
+                    src={`data:image/png;base64,${dataSymbolImage2}`}
+                    width="150"
+                    height="150"
+                    alt=""
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Stack>
+      </main>
     </div>
   );
 };
