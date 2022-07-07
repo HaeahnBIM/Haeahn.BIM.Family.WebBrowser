@@ -1,171 +1,151 @@
-import React, {useState} from 'react';
-import {Checkbox, Segment} from 'semantic-ui-react';
-import {Column, Table, AutoSizer, SortDirection} from 'react-virtualized';
-import _ from 'lodash';
+import React, { useState, useEffect } from "react";
+import { Checkbox, Segment } from "semantic-ui-react";
+import { Column, Table, AutoSizer, SortDirection } from "react-virtualized";
+import clsx from "clsx";
+import TableCell from "@mui/material/TableCell";
+import _ from "lodash";
 import "react-virtualized/styles.css";
 
-const list = [
-  {
-    id: 1001,
-    code: 'TU101',
-    title: 'test one',
-    status: 'Approved',
-    assigned: 'Test Person one',
-  },
-  {
-    id: 1002,
-    code: 'TU102',
-    title: 'test two',
-    status: 'Approved',
-    assigned: 'Test Person',
-  },
-  {
-    id: 1003,
-    code: 'TU103',
-    title: 'test three',
-    status: 'Approved',
-    assigned: 'Test Person two',
-  },
-  {
-    id: 1004,
-    code: 'TU104',
-    title: 'test four',
-    status: 'Approved',
-    assigned: 'Test Person zero',
-  },
-  {
-    id: 1005,
-    code: 'TU104',
-    title: 'test four',
-    status: 'Approved',
-    assigned: 'Test Person zero',
-  },
-];
+const classes = {
+  flexContainer: "ReactVirtualizedDemo-flexContainer",
+  tableRow: "ReactVirtualizedDemo-tableRow",
+  tableRowHover: "ReactVirtualizedDemo-tableRowHover",
+  tableCell: "ReactVirtualizedDemo-tableCell",
+  noClick: "ReactVirtualizedDemo-noClick",
+};
+
+// Table data as a array of objects
+let list = [];
+for (let i = 0; i < 1000; i++) {
+  list.push({
+    key: i,
+    name: `${i} Brian Vaughn`,
+    description: "Software engineer",
+  });
+}
 
 export default function EditableList() {
-  const [sortBy, setSortBy] = useState("id");
-  const [sortDirection, setSortDirection] = useState("DESC");
-  const [sortedList, setSortedList] = useState(
-    _sortList({ sortBy, sortDirection })
-  );
-  function _sortList() {
-    const newList = _.sortBy(list, [sortBy]);
+  const [sortBy, setSortBy] = useState("name");
+  const [sortDirection, setSortDirection] = useState("ASC");
+  const [sortedList, setSortedList] = useState([]);
+
+  useEffect(() => {
+    setSortedList(_sortList(sortBy, sortDirection));
+  }, []);
+
+  const columns = [
+    {
+      width: 200,
+      label: "key",
+      dataKey: "key",
+    },
+    {
+      width: 200,
+      label: "name",
+      dataKey: "name",
+    },
+    {
+      width: 200,
+      label: "description",
+      dataKey: "description",
+    },
+  ];
+
+  const headerHeight = 20;
+  const rowHeight = 20;
+
+  const _sortList = ({ sortBy, sortDirection }) => {
+    let newList = _.sortBy(list, [sortBy]);
     if (sortDirection === SortDirection.DESC) {
       newList.reverse();
     }
     return newList;
-  }
+  };
 
-  function _sort() {
-    setSortBy(sortBy);
-    setSortDirection(sortDirection);
-    setSortedList(_sortList({ sortBy, sortDirection }));
-  }
+  const _sort = ({ sortBy, sortDirection }) => {
+    const sortedList = this._sortList({ sortBy, sortDirection });
+    this.setState({ sortBy, sortDirection, sortedList });
+  };
 
-  function _headerRenderer() {
+  const handleCellClick = (event) => {
+    console.log("const handleCellClick = (event)", event.target);
+  };
+
+  const cellRenderer = ({ cellData, columnIndex }) => {
+    // const { columns, rowHeight, onRowClick } = this.props;
     return (
-      <div>
-        <Checkbox />
-      </div>
-    );
-  }
-  function _rowRenderer({
-    key, // Unique key within array of rows
-    index // Index of row within collection
-  }) {
-    return (
-      <div
-        key={key}
-        className="ReactVirtualized__Table__row"
-        role="row"
-        style={{
-          height: "40px",
-          width: "800px",
-          overflow: "hidden",
-          paddingRight: "12px"
-        }}
-      >
-        {
-          <>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 100px" }}
-            >
-              <Checkbox />
-            </div>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 200px" }}
-            >
-              {list[index].id}
-            </div>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 300px" }}
-            >
-              {list[index].code}
-            </div>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 300px" }}
-            >
-              {list[index].title}
-            </div>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 300px" }}
-            >
-              {list[index].status}
-            </div>
-            <div
-              className="ReactVirtualized__Table__rowColumn"
-              role="gridcell"
-              style={{ overflow: "hidden", flex: "0 1 300px" }}
-            >
-              {list[index].assigned}
-            </div>
-          </>
+      <TableCell
+        component="div"
+        className={clsx(classes.tableCell, classes.flexContainer)}
+        variant="body"
+        style={{ height: rowHeight }}
+        align={
+          (columnIndex != null && columns[columnIndex].numeric) || false
+            ? "right"
+            : "left"
         }
-      </div>
+        onClick={handleCellClick}
+      >
+        {cellData}
+      </TableCell>
     );
-  }
+  };
+
+  const headerRenderer = ({ label, columnIndex }) => {
+    //const { headerHeight, columns } = this.props;
+
+    return (
+      <TableCell
+        component="div"
+        className={clsx(
+          classes.tableCell,
+          classes.flexContainer,
+          classes.noClick
+        )}
+        variant="head"
+        style={{ height: headerHeight }}
+        align={columns[columnIndex].numeric || false ? "right" : "left"}
+      >
+        <span>{label}</span>
+      </TableCell>
+    );
+  };
+
   return (
-    <>
-      <Segment basic />
-      <div style={{ height: 300 }}>
-        <AutoSizer>
-          {() => (
-            <Table
-              width={800}
-              height={300}
-              headerHeight={30}
-              rowHeight={40}
-              sort={_sort}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              rowCount={sortedList.length}
-              rowGetter={({ index }) => sortedList[index]}
-              rowRenderer={({ key, index }) => _rowRenderer({ key, index })}
-            >
-              <Column
-                dataKey="checkbox"
-                headerRenderer={_headerRenderer}
-                width={100}
-              />
-              <Column label="ID" dataKey="id" width={200} />
-              <Column width={300} label="Code" dataKey="code" />
-              <Column width={300} label="Title" dataKey="title" />
-              <Column width={300} label="Status" dataKey="status" />
-              <Column width={300} label="Assigned" dataKey="assigned" />
-            </Table>
-          )}
-        </AutoSizer>
-      </div>
-    </>
+    <div style={{ height: 400 }}>
+      <AutoSizer>
+        {({ height, width }) => (
+          <Table
+            width={width}
+            height={height}
+            headerHeight={20}
+            rowHeight={30}
+            sort={_sort}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            rowCount={sortedList.length}
+            rowGetter={({ index }) => sortedList[index]}
+          >
+            {columns.map(({ dataKey, ...other }, index) => {
+              return (
+                <Column
+                  key={dataKey}
+                  headerRenderer={(headerProps) =>
+                    headerRenderer({
+                      ...headerProps,
+                      columnIndex: index,
+                    })
+                  }
+                  className={classes.flexContainer}
+                  cellRenderer={cellRenderer}
+                  dataKey={dataKey}
+                  {...other}
+                />
+              );
+            })}
+          </Table>
+        )}
+      </AutoSizer>
+    </div>
   );
 }

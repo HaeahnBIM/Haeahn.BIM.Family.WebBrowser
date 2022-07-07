@@ -13,6 +13,7 @@
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
+    "clsx": "^1.2.1",
     "global": "^4.4.0",
     "js-file-download": "^0.4.12",
     "mysql": "^2.18.1",

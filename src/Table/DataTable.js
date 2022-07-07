@@ -5,11 +5,14 @@ import Button from "@mui/material/Button";
 import "./DataTable.css";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
+import DepartmentFilter from "../components/DepartmentFilter";
+import CategoryFilter from "../components/CategoryFilter";
 import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
 import fileDownload from "js-file-download";
 import axios from "axios";
 import { Divider, Stack } from "@mui/material";
+import Dummy from "../api/Dummy.json";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -32,7 +35,7 @@ const columnsFamily = [
 const columnsSymbol = [
   { field: "SEQ", headerName: "ID", width: 60 },
   { field: "ID_REL_FML", headerName: "ID_REL_FML", width: 120, hide: true },
-  { field: "NM_SYM", headerName: "NM_SYM", width: 250 },
+  { field: "NM_SYM", headerName: "NM_SYM", width: 200 },
   { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
 ];
 
@@ -44,21 +47,27 @@ const columnsSameFamily = [
   { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
 ];
 
+// const columnsParameter = [
+//   { field: "SEQ", headerName: "ID", width: 50 },
+//   { field: "ID_REL", headerName: "ID_REL", width: 120 },
+//   { field: "BuiltInParameter", headerName: "BuiltInParameter", width: 150 },
+//   { field: "Name", headerName: "Name", width: 150 },
+//   { field: "ParameterGroup", headerName: "ParameterGroup", width: 150 },
+//   { field: "ParameterType", headerName: "ParameterType", width: 150 },
+//   { field: "Formula", headerName: "Formula", width: 150 },
+//   { field: "IsProject", headerName: "IsProject", width: 150 },
+//   { field: "IsInstance", headerName: "IsInstance", width: 150 },
+//   { field: "IsReadOnly", headerName: "IsReadOnly", width: 150 },
+//   { field: "IsReporting", headerName: "IsReporting", width: 150 },
+//   { field: "IsShared", headerName: "IsShared", width: 150 },
+//   { field: "StorageType", headerName: "StorageType", width: 150 },
+//   { field: "UserModifiable", headerName: "UserModifiable", width: 150 },
+// ];
+
 const columnsParameter = [
   { field: "SEQ", headerName: "ID", width: 50 },
   { field: "ID_REL", headerName: "ID_REL", width: 120 },
-  { field: "BuiltInParameter", headerName: "BuiltInParameter", width: 150 },
-  { field: "Name", headerName: "Name", width: 150 },
-  { field: "ParameterGroup", headerName: "ParameterGroup", width: 150 },
-  { field: "ParameterType", headerName: "ParameterType", width: 150 },
-  { field: "Formula", headerName: "Formula", width: 150 },
-  { field: "IsProject", headerName: "IsProject", width: 150 },
-  { field: "IsInstance", headerName: "IsInstance", width: 150 },
-  { field: "IsReadOnly", headerName: "IsReadOnly", width: 150 },
-  { field: "IsReporting", headerName: "IsReporting", width: 150 },
-  { field: "IsShared", headerName: "IsShared", width: 150 },
-  { field: "StorageType", headerName: "StorageType", width: 150 },
-  { field: "UserModifiable", headerName: "UserModifiable", width: 150 },
+  { field: "JSON_PARAM", headerName: "JSON_PARAM", width: 150 },
 ];
 
 const columnsRelation = [
@@ -73,6 +82,8 @@ const columnsRelation = [
 const _rowHeight = 30;
 
 const DataTable = () => {
+  const [windows, setWindows] = useState(Dummy["창유형"]);
+  const [doors, setDoors] = useState(Dummy["문유형"]);
   const [dataFamily, setFamily] = useState([]);
   const [dataSameFamily, setSameFamily] = useState([]);
   const [dataSymbol, setSymbol] = useState([]);
@@ -91,11 +102,14 @@ const DataTable = () => {
   const [searchVert, setSearchVert] = useState("");
   const [searchDoubleAll, setSearchDoubleAll] = useState(true);
   const [searchDouble, setSearchDouble] = useState(false);
+  const [finishOptions, setFinishOptions] = useState([]);
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
   useEffect(() => {
     fetchTableFamily();
+    setFinishOptions(windows.concat(doors));
+    //setFinishOptions([windows, doors]);
   }, []);
 
   const fetchTableFamily = async () => {
@@ -393,7 +407,8 @@ const DataTable = () => {
   };
 
   const handleClickSearch = () => {
-    handleSearch();
+    console.log(windows);
+    //handleSearch();
   };
 
   const handleClickUser = (event) => {
@@ -660,6 +675,63 @@ const DataTable = () => {
     );
   };
 
+  const handleChange = (e) => {
+
+    let curFilter = {};
+    for (let i = 0; i < windows.length; i++) {
+      if (windows[i].key === e.target.value) {
+        curFilter = windows[i];
+      }
+    }
+    if (curFilter === {}) {
+      for (let i = 0; i < doors.length; i++) {
+        if (doors[i].key === e.target.value) {
+          curFilter = doors[i];
+        }
+      }
+    }
+
+    if (e.target.checked) {
+      setFinishOptions((finishOptions) => [...finishOptions, curFilter]);
+    } else {
+      let filter = [];      
+      for (let i = 0; i < finishOptions.length; i++) {
+        if (finishOptions[i].key !== e.target.value) {
+          filter.push(finishOptions[i]);
+        }
+      }
+      setFinishOptions(filter);
+    }
+
+    //console.log(finishOptions);
+
+    //const a = {...finishOptions}
+    //a.push(e.target.name)
+
+    //setFinishOptions({...finishOptions})
+
+    //console.log("finishOptions", finishOptions);
+
+    // if(e.target.checked){
+    //   if(e.target.name in finishOptions){
+    //     console.log("if(e.target.name in finishOptions)", e.target.name in finishOptions);
+    //     //finishOptions[e.target.name].push(e.target.value)
+    //   }
+    //   else{
+    //     console.log("else{", e.target.name in finishOptions);
+    //     //finishOptions[e.target.name] = [e.target.value]
+    //   }
+    // }
+    // else{
+    //   if(e.target.name in finishOptions){
+    //     //finishOptions[e.target.name].pop(e.target.value)
+    //   }
+    //   if(finishOptions[e.target.name].length == 0){
+    //     //delete(finishOptions[e.target.name])
+    //   }
+    // }
+  };
+
   return (
     <div style={{ margin: "10px" }}>
       <main>
@@ -668,11 +740,11 @@ const DataTable = () => {
           divider={<Divider orientation="vertical" flexItem />}
           spacing={2}
         >
-          <Stack spacing={2}>
+          <Stack spacing={1} width="250px">
             <div>
               총 유리개수
               <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
                 id="search-total"
                 type="text"
                 variant="standard"
@@ -683,7 +755,7 @@ const DataTable = () => {
             <div>
               유리짝 수
               <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
                 id="search-elev"
                 type="text"
                 variant="standard"
@@ -694,7 +766,7 @@ const DataTable = () => {
             <div>
               가로개수
               <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
                 id="search-horz"
                 type="text"
                 variant="standard"
@@ -705,7 +777,7 @@ const DataTable = () => {
             <div>
               세로개수
               <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "100px" }}
+                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
                 id="search-vert"
                 type="text"
                 variant="standard"
@@ -715,23 +787,25 @@ const DataTable = () => {
             </div>
             <div>이중창</div>
             <div>
-              이중창 | 전체
+              전체
               <Checkbox
-                style={{ margin: "0px 30px 0px 10px" }}
                 id="search-double"
                 value={searchDoubleAll}
                 checked={searchDoubleAll}
                 onChange={handleChangeDoubleAll}
               />
-            </div>
-            <div>
               이중창
               <Checkbox
-                style={{ margin: "0px 30px 0px 10px" }}
                 id="search-double"
                 value={searchDouble}
                 onChange={handleChangeDouble}
               />
+            </div>
+            <div onChange={handleChange}>
+              <CategoryFilter
+                filterWindows={windows}
+                filterDoors={doors}
+              ></CategoryFilter>
             </div>
           </Stack>
 
@@ -776,36 +850,48 @@ const DataTable = () => {
               spacing={2}
             >
               <Stack width="80%" height="100%" direction={"column"} spacing={2}>
-                <span style={{ margin: "5px" }}>Family</span>
-                <Stack
-                  direction={"row"}
-                  spacing={2}
-                  display="flex"
-                  justifyContent="flex-end"
-                >
-                  <button style={{ height: "25px" }} onClick={handleDownload}>
-                    download
-                  </button>
-                  <button style={{ height: "25px" }} onClick={handleSetReport}>
-                    report
-                  </button>
-                  <button style={{ height: "25px" }} onClick={handleLike}>
-                    like
-                  </button>
-                  <button
-                    style={{ height: "25px" }}
-                    onClick={handleAddFavorite}
+                <Stack direction={"row"} spacing={2} margin="5px">
+                  <span style={{ width: "100%" }}>Family</span>
+                  <Stack
+                    direction={"row"}
+                    spacing={2}
+                    display="flex"
+                    justifyContent="flex-end"
                   >
-                    add favorite
-                  </button>
-                  <button
-                    style={{ height: "25px" }}
-                    onClick={handleDeleteFavorite}
-                  >
-                    delete favorite
-                  </button>
+                    <button
+                      style={{ height: "25px", width: "80px" }}
+                      onClick={handleDownload}
+                    >
+                      download
+                    </button>
+                    <button
+                      style={{ height: "25px", width: "80px" }}
+                      onClick={handleSetReport}
+                    >
+                      report
+                    </button>
+                    <button
+                      style={{ height: "25px", width: "80px" }}
+                      onClick={handleLike}
+                    >
+                      like
+                    </button>
+                    <button
+                      style={{ height: "25px", width: "100px" }}
+                      onClick={handleAddFavorite}
+                    >
+                      add favorite
+                    </button>
+                    <button
+                      style={{ height: "25px", width: "100px" }}
+                      onClick={handleDeleteFavorite}
+                    >
+                      delete favorite
+                    </button>
+                  </Stack>
                 </Stack>
-                <DataGrid 
+
+                <DataGrid
                   rows={dataFamily}
                   columns={columnsFamily}
                   getRowId={(row) => row.SEQ}
@@ -819,36 +905,40 @@ const DataTable = () => {
                   selectionModel={selectionModel}
                 />
 
-                <span style={{ margin: "10px 5px 5px 5px" }}>Equal Volume</span>
+                <Stack direction={"row"} spacing={2} margin="5px">
+                  <span style={{ width: "100%" }}>Equal Volume</span>
 
-                <Stack
-                  direction={"row"}
-                  spacing={2}
-                  display="flex"
-                  justifyContent="flex-end"
-                >
-                  <button onClick={onRemove} style={{ height: "25px" }}>
-                    delete
-                  </button>
+                  <Stack
+                    direction={"row"}
+                    spacing={2}
+                    display="flex"
+                    justifyContent="flex-end"
+                  >
+                    <button onClick={onRemove} style={{ height: "25px" }}>
+                      delete
+                    </button>
+                  </Stack>
                 </Stack>
 
-                <DataGrid
-                  rows={dataSameFamily}
-                  columns={columnsSameFamily}
-                  getRowId={(row) => row.SEQ}
-                  rowHeight={_rowHeight}
-                  rowsPerPageOptions={[100]}
-                  onRowClick={handlePreviewImage}
-                  checkboxSelection
-                  //checkboxSelection={checkboxSelection}
-                  onSelectionModelChange={(sel) => {
-                    setSelectionSameModel(sel);
-                  }}
-                  selectionModel={selectionSameModel}
-                />
+                <div style={{ height: "200px" }}>
+                  <DataGrid
+                    rows={dataSameFamily}
+                    columns={columnsSameFamily}
+                    getRowId={(row) => row.SEQ}
+                    rowHeight={_rowHeight}
+                    rowsPerPageOptions={[100]}
+                    onRowClick={handlePreviewImage}
+                    checkboxSelection
+                    //checkboxSelection={checkboxSelection}
+                    onSelectionModelChange={(sel) => {
+                      setSelectionSameModel(sel);
+                    }}
+                    selectionModel={selectionSameModel}
+                  />
+                </div>
               </Stack>
 
-              <Stack direction={"column"} spacing={2}>
+              <Stack direction={"column"} spacing={2} width="400px">
                 <span style={{ margin: "5px" }}>Type</span>
                 <DataGrid
                   getRowId={(row) => row.SEQ}
@@ -857,14 +947,14 @@ const DataTable = () => {
                   rowHeight={_rowHeight}
                   pageSize={100}
                 />
-                <span style={{ margin: "5px" }}>Patameter</span>
+                {/* <span style={{ margin: "5px" }}>Patameter</span>
                 <DataGrid
                   getRowId={(row) => row.SEQ}
                   rows={dataParameter}
                   columns={columnsParameter}
                   rowHeight={_rowHeight}
                   pageSize={100}
-                />
+                /> */}
 
                 <span style={{ margin: "10px 5px 5px 5px" }}>
                   Similar Family

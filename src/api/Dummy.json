@@ -13,6 +13,17 @@
         "연구소"
     ],
     
+    "창유형": [
+        {"key":"window_single","value":"단창", "checked":true},
+        {"key":"window_double","value":"이중창", "checked":true},
+        {"key":"window_normal","value":"일반", "checked":true},
+        {"key":"window_corner","value":"코너", "checked":true}
+    ],
+    
+    "문유형": [
+        {"key":"door_normal","value":"일반", "checked":true}
+    ],
+    
     "직원 리스트": [
         {
             "이름": "가나다",
