@@ -13,15 +13,20 @@
         "연구소"
     ],
     
+    "카테고리": [
+        {"key":"window","value":"창", "group":"category", "checked":false},
+        {"key":"door","value":"문", "group":"category", "checked":false}
+    ],
+    
     "창유형": [
-        {"key":"window_single","value":"단창", "checked":true},
-        {"key":"window_double","value":"이중창", "checked":true},
-        {"key":"window_normal","value":"일반", "checked":true},
-        {"key":"window_corner","value":"코너", "checked":true}
+        {"key":"window_single","value":"단창", "group":"isdouble", "checked":false},
+        {"key":"window_double","value":"이중창", "group":"isdouble", "checked":false},
+        {"key":"window_normal","value":"일반", "group":"iscorner", "checked":false},
+        {"key":"window_corner","value":"코너", "group":"iscorner", "checked":false}
     ],
     
     "문유형": [
-        {"key":"door_normal","value":"일반", "checked":true}
+        {"key":"door_normal","value":"일반", "checked":false}
     ],
     
     "직원 리스트": [

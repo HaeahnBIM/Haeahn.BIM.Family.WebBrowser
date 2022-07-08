@@ -7,6 +7,8 @@ import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import DepartmentFilter from "../components/DepartmentFilter";
 import CategoryFilter from "../components/CategoryFilter";
+import WindowTypeFilter from "../components/WindowTypeFilter";
+import DoorTypeFilter from "../components/DoorTypeFilter";
 import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
 import fileDownload from "js-file-download";
@@ -82,9 +84,11 @@ const columnsRelation = [
 const _rowHeight = 30;
 
 const DataTable = () => {
+  const [filterCategory, setFilterCategory] = useState(Dummy["카테고리"]);
   const [windows, setWindows] = useState(Dummy["창유형"]);
   const [doors, setDoors] = useState(Dummy["문유형"]);
   const [dataFamily, setFamily] = useState([]);
+  const [familyFiltered, setFamilyFiltered] = useState([]);
   const [dataSameFamily, setSameFamily] = useState([]);
   const [dataSymbol, setSymbol] = useState([]);
   const [dataSymbolImage, setSymbolImage] = useState("");
@@ -103,12 +107,14 @@ const DataTable = () => {
   const [searchDoubleAll, setSearchDoubleAll] = useState(true);
   const [searchDouble, setSearchDouble] = useState(false);
   const [finishOptions, setFinishOptions] = useState([]);
+  const [showWindow, setShowWindow] = useState(true);
+  const [showDoor, setShowDoor] = useState(true);
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
   useEffect(() => {
     fetchTableFamily();
-    setFinishOptions(windows.concat(doors));
+    //setFinishOptions(windows.concat(doors));
     //setFinishOptions([windows, doors]);
   }, []);
 
@@ -117,7 +123,10 @@ const DataTable = () => {
 
     await fetch(url)
       .then((data) => data.json())
-      .then((data) => setFamily(data));
+      .then((data) => {
+        setFamily(data);
+        setFamilyFiltered(data);
+      });
   };
 
   const fetchTableSymbol = async (id) => {
@@ -675,7 +684,112 @@ const DataTable = () => {
     );
   };
 
-  const handleChange = (e) => {
+  const filteringCategoryFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      var f = filter.key;
+      switch (f) {
+        case "window":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.NM_CATG === "Windows")
+          );
+          break;
+        case "door":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.NM_CATG === "Doors")
+          );
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return filtered;
+  };
+
+  const filteringDoubleFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      var f = filter.key;
+      switch (f) {
+        case "window_single":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsDouble === false)
+          );
+          break;
+        case "window_double":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsDouble)
+          );
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return filtered;
+  };
+
+  const filteringCornerFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      var f = filter.key;
+      switch (f) {
+        case "window_normal":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsCorner === false)
+          );
+          break;
+        case "window_corner":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsCorner)
+          );
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return filtered;
+  };
+
+  const handleChangeCategory = (e) => {
+
+    setFamilyFiltered([...dataFamily]);
+
+    let isFilterTrue = false;
+    for (let i = 0; i < filterCategory.length; i++) {
+      if (filterCategory[i].checked) {
+        isFilterTrue = true;
+        break;
+      }
+    }
+
+    if (isFilterTrue === false) {
+      return;
+    }
+
+    let filters_True = [];
+    for (let i = 0; i < filterCategory.length; i++) {
+      if (filterCategory[i].checked) {
+        filters_True.push(filterCategory[i]);
+      }
+    }
+
+    let filtered = filteringCategoryFamily(filters_True, dataFamily);
+
+    setFamilyFiltered(filtered);
+  };
+
+  const handleChangeWindowType = (e) => {
+
+    setFamilyFiltered([...dataFamily]);
 
     let curFilter = {};
     for (let i = 0; i < windows.length; i++) {
@@ -694,7 +808,7 @@ const DataTable = () => {
     if (e.target.checked) {
       setFinishOptions((finishOptions) => [...finishOptions, curFilter]);
     } else {
-      let filter = [];      
+      let filter = [];
       for (let i = 0; i < finishOptions.length; i++) {
         if (finishOptions[i].key !== e.target.value) {
           filter.push(finishOptions[i]);
@@ -703,34 +817,64 @@ const DataTable = () => {
       setFinishOptions(filter);
     }
 
-    //console.log(finishOptions);
+    let isFilterTrue = false;
+    for (let i = 0; i < windows.length; i++) {
+      if (windows[i].checked) {
+        isFilterTrue = true;
+        break;
+      }
+    }
+    if (isFilterTrue === false) {
+      for (let i = 0; i < doors.length; i++) {
+        if (doors[i].checked) {
+          isFilterTrue = true;
+          break;
+        }
+      }
+    }
 
-    //const a = {...finishOptions}
-    //a.push(e.target.name)
+    if (isFilterTrue === false) {
+      setFamilyFiltered(dataFamily);
+      return;
+    }
 
-    //setFinishOptions({...finishOptions})
+    let window_filters_True = [];
+    for (let i = 0; i < windows.length; i++) {
+      if (windows[i].checked) {
+        window_filters_True.push(windows[i]);
+      }
+    }
 
-    //console.log("finishOptions", finishOptions);
+    setFamilyFiltered(dataFamily);
 
-    // if(e.target.checked){
-    //   if(e.target.name in finishOptions){
-    //     console.log("if(e.target.name in finishOptions)", e.target.name in finishOptions);
-    //     //finishOptions[e.target.name].push(e.target.value)
-    //   }
-    //   else{
-    //     console.log("else{", e.target.name in finishOptions);
-    //     //finishOptions[e.target.name] = [e.target.value]
-    //   }
-    // }
-    // else{
-    //   if(e.target.name in finishOptions){
-    //     //finishOptions[e.target.name].pop(e.target.value)
-    //   }
-    //   if(finishOptions[e.target.name].length == 0){
-    //     //delete(finishOptions[e.target.name])
-    //   }
-    // }
+    let filtered = [];
+
+    const filterIsDouble = window_filters_True.filter(
+      (data) => data.group === "isdouble"
+    );
+    const filterIsCorner = window_filters_True.filter(
+      (data) => data.group === "iscorner"
+    );
+
+    if (filterIsDouble.length > 0) {
+      filtered = filteringDoubleFamily(filterIsDouble, dataFamily);
+    }
+
+    if (filterIsCorner.length > 0) {
+      filtered = filteringCornerFamily(
+        filterIsCorner,
+        filtered.length > 0 ? filtered : dataFamily
+      );
+    }
+
+    setFamilyFiltered(filtered);
   };
+
+  const handleChangeDoorType = () => {
+    
+    //setFamilyFiltered([...dataFamily]);
+
+};
 
   return (
     <div style={{ margin: "10px" }}>
@@ -785,28 +929,19 @@ const DataTable = () => {
                 onChange={handleChangeVert}
               />
             </div>
-            <div>이중창</div>
-            <div>
-              전체
-              <Checkbox
-                id="search-double"
-                value={searchDoubleAll}
-                checked={searchDoubleAll}
-                onChange={handleChangeDoubleAll}
-              />
-              이중창
-              <Checkbox
-                id="search-double"
-                value={searchDouble}
-                onChange={handleChangeDouble}
-              />
+            <div onChange={handleChangeCategory}>
+              <CategoryFilter filterCategory={filterCategory}></CategoryFilter>
             </div>
-            <div onChange={handleChange}>
-              <CategoryFilter
-                filterWindows={windows}
-                filterDoors={doors}
-              ></CategoryFilter>
-            </div>
+            {showWindow && (
+              <div onChange={handleChangeWindowType}>
+                <WindowTypeFilter filterWindows={windows}></WindowTypeFilter>
+              </div>
+            )}
+            {showDoor && (
+              <div onChange={handleChangeDoorType}>
+                <DoorTypeFilter filterDoors={doors}></DoorTypeFilter>
+              </div>
+            )}
           </Stack>
 
           <Stack
@@ -892,7 +1027,7 @@ const DataTable = () => {
                 </Stack>
 
                 <DataGrid
-                  rows={dataFamily}
+                  rows={familyFiltered}
                   columns={columnsFamily}
                   getRowId={(row) => row.SEQ}
                   rowHeight={_rowHeight}
