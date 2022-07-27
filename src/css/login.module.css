@@ -1,0 +1,31 @@
+img {
+}
+
+.logo_img{
+    display: block;
+    width: 160px;
+    height: 45px;
+    margin: auto;
+    padding: 80px 0 15px 0;
+
+}
+
+.block_row_wrapper{
+    display: flex;
+    flex-direction: row;
+}
+
+.block_column_wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+.content_wrapper{
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color:	#F1F1F1;
+    margin: 2px 0 0 2px;
+    text-align: center;
+    overflow-x: hidden;
+}

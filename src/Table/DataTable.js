@@ -63,23 +63,6 @@ const columnsSameFamily = [
   { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
 ];
 
-// const columnsParameter = [
-//   { field: "SEQ", headerName: "ID", width: 50 },
-//   { field: "ID_REL", headerName: "ID_REL", width: 120 },
-//   { field: "BuiltInParameter", headerName: "BuiltInParameter", width: 150 },
-//   { field: "Name", headerName: "Name", width: 150 },
-//   { field: "ParameterGroup", headerName: "ParameterGroup", width: 150 },
-//   { field: "ParameterType", headerName: "ParameterType", width: 150 },
-//   { field: "Formula", headerName: "Formula", width: 150 },
-//   { field: "IsProject", headerName: "IsProject", width: 150 },
-//   { field: "IsInstance", headerName: "IsInstance", width: 150 },
-//   { field: "IsReadOnly", headerName: "IsReadOnly", width: 150 },
-//   { field: "IsReporting", headerName: "IsReporting", width: 150 },
-//   { field: "IsShared", headerName: "IsShared", width: 150 },
-//   { field: "StorageType", headerName: "StorageType", width: 150 },
-//   { field: "UserModifiable", headerName: "UserModifiable", width: 150 },
-// ];
-
 const columnsParameter = [
   { field: "SEQ", headerName: "ID", width: 50 },
   { field: "ID_REL", headerName: "ID_REL", width: 120 },
