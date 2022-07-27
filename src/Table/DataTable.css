@@ -67,3 +67,12 @@
     height: 48%;
     display: flex;
 }
+
+.listView{margin-top:20px;border-top:1px solid #DDD;}
+.listView li{border-bottom:1px solid #DDD;padding:10px 15px;display:inline-block;}
+.listView li .title {padding:10px 0px;color:#000;font-size:1.6rem;font-weight:400;}
+.listView li .title a{color:#000;}
+.listView li .cont span{display:inline-block;color:#555;}
+.listView li .cont span.date{margin-bottom:5px;color:#999;font-size:1.2rem}
+.listView li .bookImg{position:relative;float:left;}
+.listView li .bookDesc{float:left;width:100%;}

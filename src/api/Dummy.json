@@ -29,6 +29,14 @@
         {"key":"door_normal","value":"일반", "checked":false}
     ],
     
+    "중복조건": [
+        {"key":"volume","value":"볼륨", "checked":false},
+        {"key":"category","value":"카테고리", "checked":false},
+        {"key":"project","value":"동일프로젝트", "checked":false},
+        {"key":"panel_window","value":"창유리", "checked":false},
+        {"key":"panel_door","value":"문짝", "checked":false}
+    ],
+    
     "직원 리스트": [
         {
             "이름": "가나다",

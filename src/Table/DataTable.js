@@ -9,12 +9,26 @@ import DepartmentFilter from "../components/DepartmentFilter";
 import CategoryFilter from "../components/CategoryFilter";
 import WindowTypeFilter from "../components/WindowTypeFilter";
 import DoorTypeFilter from "../components/DoorTypeFilter";
+import FavList from "../components/FavList";
 import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
 import fileDownload from "js-file-download";
 import axios from "axios";
 import { Divider, Stack } from "@mui/material";
 import Dummy from "../api/Dummy.json";
+
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -109,6 +123,10 @@ const DataTable = () => {
   const [finishOptions, setFinishOptions] = useState([]);
   const [showWindow, setShowWindow] = useState(true);
   const [showDoor, setShowDoor] = useState(true);
+  const [state, setState] = useState({ right: false });
+  const [drawerChange, setDrawerChange] = useState(false);
+  const [newFavoriteName, setNewFavoriteName] = useState("");
+  const [newFavoriteDesc, setNewFavoriteDesc] = useState("");
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
@@ -306,7 +324,7 @@ const DataTable = () => {
   };
 
   const handlePreviewImageAndSameData = async (e) => {
-    console.log(e.row);
+    //console.log(e.row);
     setSymbolImage(e.row.IMG_SYM);
     handleGetData(e.row);
     handleGetSameVolmne(e.row);
@@ -572,29 +590,35 @@ const DataTable = () => {
   };
 
   const handleAddFavorite = async (e) => {
-    const postData = {
-      ID: selectionModel[0],
-      USERID: "20211201",
-    };
+    window.open(
+      "./FavList",
+      "_blank",
+      "location=yes,height=500,width=700,left=0,location=0,scrollbars=yes,status=yes"
+    );
 
-    console.log(postData);
+    // const postData = {
+    //   ID: selectionModel[0],
+    //   USERID: "20211201",
+    // };
 
-    try {
-      const res = await fetch(baseuri + "addFavorite", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
-      if (!res.ok) {
-        const message = `An error has occured: ${res.status} - ${res.statusText}`;
-        throw new Error(message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    // console.log(postData);
+
+    // try {
+    //   const res = await fetch(baseuri + "addFavorite", {
+    //     method: "POST",
+    //     mode: "cors",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(postData),
+    //   });
+    //   if (!res.ok) {
+    //     const message = `An error has occured: ${res.status} - ${res.statusText}`;
+    //     throw new Error(message);
+    //   }
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   const handleDeleteFavorite = async (e) => {
@@ -684,6 +708,14 @@ const DataTable = () => {
     );
   };
 
+  const handleClickMerge = (event) => {
+    window.open(
+      "./Merge",
+      "_blank",
+      "location=yes,height=900,width=1400,left=0,location=0,scrollbars=yes,status=yes"
+    );
+  };
+
   const filteringCategoryFamily = (filters, filteredFamilies) => {
     let filtered = [];
 
@@ -760,7 +792,6 @@ const DataTable = () => {
   };
 
   const handleChangeCategory = (e) => {
-
     setFamilyFiltered([...dataFamily]);
 
     let isFilterTrue = false;
@@ -788,7 +819,6 @@ const DataTable = () => {
   };
 
   const handleChangeWindowType = (e) => {
-
     setFamilyFiltered([...dataFamily]);
 
     let curFilter = {};
@@ -871,10 +901,138 @@ const DataTable = () => {
   };
 
   const handleChangeDoorType = () => {
-    
     //setFamilyFiltered([...dataFamily]);
+  };
 
-};
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (selectionModel[0] === undefined) {
+      return;
+    }
+
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setState({ ...state, [anchor]: open });
+    setDrawerChange(false);
+  };
+
+  const handleGetSelectedModel = () => {
+    //console.log(familyFiltered.length)
+    //console.log(selectionModel[0])
+
+    let data = {};
+    for (let index = 0; index < familyFiltered.length; index++) {
+      const item = familyFiltered[index];
+      //console.log(item.SEQ)
+      if (item.SEQ === selectionModel[0]) {
+        data = item;
+        break;
+      }
+    }
+
+    return data;
+  };
+
+  function list(anchor) {
+    let data = {};
+    for (let index = 0; index < familyFiltered.length; index++) {
+      const item = familyFiltered[index];
+      if (item.SEQ === selectionModel[0]) {
+        data = item;
+        break;
+      }
+    }
+
+    return (
+      <Box
+        sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 350 }}
+        role="presentation"
+        //onClick={toggleDrawer(anchor, false)}
+        //onKeyDown={toggleDrawer(anchor, false)}
+      >
+        <FavList SelectedFamily={data} />
+      </Box>
+    );
+  }
+
+  function SelectedFamily() {
+    let data = {};
+    for (let index = 0; index < familyFiltered.length; index++) {
+      const item = familyFiltered[index];
+      if (item.SEQ === selectionModel[0]) {
+        data = item;
+        break;
+      }
+    }
+
+    return (
+      <Stack direction={"column"} spacing={2}>
+        <Stack direction={"row"} spacing={2}>
+          <img
+            src={`data:image/png;base64,${data.IMG_SYM}`}
+            width="100"
+            height="100"
+            alt=""
+          />
+          <div>
+            <div>{data.NM_CATG}</div>
+            <div>{data.NM_FML}</div>
+          </div>
+        </Stack>
+      </Stack>
+    );
+  }
+
+  const handleClickConfirmAdd = async () => {
+    console.log(newFavoriteName);
+
+    if (newFavoriteName === ""){
+      return;
+    }
+
+    const postData = {
+      NM_LIST: newFavoriteDesc,
+      DSCRP: newFavoriteName,
+      USERID: '20211201'
+    };
+
+    try {
+      const res = await fetch(baseuri + "createFavoriteList", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res;
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      //setFavorite(data);
+
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+    setDrawerChange(false);
+    
+    setNewFavoriteName("");
+    setNewFavoriteDesc("");
+  };
 
   return (
     <div style={{ margin: "10px" }}>
@@ -943,7 +1101,6 @@ const DataTable = () => {
               </div>
             )}
           </Stack>
-
           <Stack
             width="100%"
             height="1050px"
@@ -974,6 +1131,12 @@ const DataTable = () => {
                 onClick={handleClickReport}
               >
                 신고목록
+              </button>
+              <button
+                style={{ height: "30px", margin: "5px", width: "80px" }}
+                onClick={handleClickMerge}
+              >
+                중복관리
               </button>
             </Stack>
 
@@ -1013,7 +1176,7 @@ const DataTable = () => {
                     </button>
                     <button
                       style={{ height: "25px", width: "100px" }}
-                      onClick={handleAddFavorite}
+                      onClick={toggleDrawer("right", true)}
                     >
                       add favorite
                     </button>
@@ -1114,6 +1277,113 @@ const DataTable = () => {
           </Stack>
         </Stack>
       </main>
+      <div>
+        <React.Fragment key={"right"}>
+          <Drawer
+            anchor={"right"}
+            open={state["right"]}
+            onClose={toggleDrawer("right", false)}
+          >
+            <Stack
+              direction={"row"}
+              spacing={2}
+              justifyContent="space-between"
+              alignItems="flex-start"
+              style={{ margin: "15px" }}
+            >
+              {drawerChange ? (
+                <ArrowBackIcon
+                  onClick={() => {
+                    setDrawerChange(false);
+                  }}
+                />
+              ) : (
+                <span style={{ width: "25px" }}> </span>
+              )}
+
+              {drawerChange ? (
+                <div>
+                  <b>Create list</b>
+                </div>
+              ) : (
+                <div>
+                  <b>Save item in list</b>
+                </div>
+              )}
+
+              <CloseIcon onClick={toggleDrawer("right", false)} />
+            </Stack>
+            <Stack
+              direction="column"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={2}
+              style={{ height: "100%", margin: "15px" }}
+            >
+              {drawerChange ? (
+                <Box
+                  sx={{ width: 350 }}
+                  //role="presentation"
+                  // onClick={toggleDrawer("right", false)}
+                  // onKeyDown={toggleDrawer("right", false)}
+                >
+                  <TextField
+                    id="standard-basic"
+                    label="favorite name"
+                    variant="standard"
+                    style={{ width: "100%" }}
+                    value={newFavoriteName}
+                    onChange={(e) => setNewFavoriteName(e.target.value)}
+                  />
+                  <TextField
+                    id="standard-basic"
+                    label="favorite description"
+                    variant="standard"
+                    style={{ width: "100%" }}
+                    value={newFavoriteDesc}
+                    onChange={(e) => setNewFavoriteDesc(e.target.value)}
+                  />
+                </Box>
+              ) : (
+                <Stack direction="column" spacing={1}>
+                  <SelectedFamily />
+                  <Divider />
+                  {list("right")}
+                </Stack>
+              )}
+
+              <Stack
+                direction="column"
+                spacing={1}
+                justifyContent="space-around"
+                style={{ height: "60px", width: "100%" }}
+              >
+                <Divider />
+
+                {drawerChange ? (
+                  <button
+                    style={{ height: "40px" }}
+                    onClick={() => {
+                      handleClickConfirmAdd();
+                    }}
+                  >
+                    Create list confirmation
+                  </button>
+                ) : (
+                  <button
+                    style={{ height: "40px" }}
+                    onClick={() => {
+                      setDrawerChange(true);
+                    }}
+                  >
+                    Create list
+                  </button>
+                )}
+              </Stack>
+            </Stack>
+          </Drawer>
+        </React.Fragment>
+      </div>
     </div>
   );
 };
