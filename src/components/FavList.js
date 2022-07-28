@@ -14,7 +14,8 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
 const FavList = (props) => {
-  const [selectedFamily, setSelectedFamily] = useState(props.SelectedFamily);
+  const [selectedFamily, setSelectedFamily] = useState(props.selectedFamily);
+  const [employeeId, setEmployeeId] = useState(props.employeeId);
   const [favorite, setFavorite] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState();
   const [symbolImage, setSymbolImage] = useState("");
@@ -25,7 +26,7 @@ const FavList = (props) => {
 
   const fetchDataFavorite = async (e) => {
     const postData = {
-      USERID: "20211201",
+      USERID: employeeId,
     };
 
     try {

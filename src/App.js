@@ -1,5 +1,5 @@
 import React ,{useEffect, useState} from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import Dummy from "./api/Dummy.json";
 import PropTypes from "prop-types";
@@ -88,6 +88,7 @@ function App ()  {
   const [loginId, setLoginId] = useState(location.state.userObj.resultMail.substring(0, location.state.userObj.resultMail.indexOf('@')));
   const [employeeId, setEmployeeId] = useState(location.state.userObj.resultMessage);
   const [employeeName, setEmployeeName] = useState(location.state.userObj.resultUserName);
+  const [uuid, setUuid] = useState(location.state.uuid);
   
   const [filterCategory, setFilterCategory] = useState(Dummy["카테고리"]);
   const [windows, setWindows] = useState(Dummy["창유형"]);
@@ -122,11 +123,14 @@ function App ()  {
   const handleCloseSnackbar = () => setSnackbar(null);
 
   useEffect(() => {
-    console.log(loginId, employeeId, employeeName)
+    console.log(loginId, employeeId, employeeName, uuid)
     fetchTableFamily();
     //setFinishOptions(windows.concat(doors));
     //setFinishOptions([windows, doors]);
+    
   }, []);
+
+
 
   const fetchTableFamily = async () => {
     var url = new URL(baseuri + "families");
@@ -430,10 +434,20 @@ function App ()  {
     //handleSearch();
   };
 
+  const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+    if (newWindow) newWindow.opener = null
+  }
+  
   const handleClickUser = (event) => {
     console.log("/User");
+
+    //<Link to="./User" target="_blank">About</Link>
+
+    //openInNewTab('./User')
+
     window.open(
-      "./User",
+      `./User?uuid=${uuid}`,
       "_blank",
       "location=yes,height=850,width=1140,left=0,location=0,scrollbars=yes,status=yes"
     );
@@ -946,7 +960,7 @@ function App ()  {
         //onClick={toggleDrawer(anchor, false)}
         //onKeyDown={toggleDrawer(anchor, false)}
       >
-        <FavList SelectedFamily={data} />
+        <FavList selectedFamily={data} employeeId={employeeId} />
       </Box>
     );
   }

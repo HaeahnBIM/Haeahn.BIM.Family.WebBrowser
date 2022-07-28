@@ -5,6 +5,7 @@ import fileDownload from "js-file-download";
 import axios from "axios";
 import Moment from "moment";
 import moment from "moment";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -44,6 +45,9 @@ const columnsCart = [
 ];
 
 function User() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
   const [dataFavorite, setFavorite] = useState([]);
   const [dataFavoriteItems, setFavoriteItems] = useState([]);
   const [dataFavoriteModItems, setFavoriteModItems] = useState([]);
@@ -53,16 +57,39 @@ function User() {
   const [selectionFavItem, setSelectionFavItem] = useState([]);
   const [selectionDownload, setSelectionDownload] = useState([]);
   const [editRowsModel, setEditRowsModel] = useState({});
+  const [uuid, setUuid] = useState(params.get("uuid"));
+  const [employeeId, setEmployeeId] = useState("");
 
   useEffect(() => {
     fetchDataFavorite();
     fetchDataCart();
     fetchDataDownload();
+
+    LoginByUUID(uuid).then((response) => {
+      let user = JSON.parse(JSON.stringify(response.data));
+      setEmployeeId(user.resultMessage);
+    });
   }, []);
+
+  const LoginByUUID = (UUID) => {
+    try {
+      return axios.post(
+        "https://api.haeahn.com/api/uuidlogin",
+        new URLSearchParams({ UUID }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchDataFavorite = async (e) => {
     const postData = {
-      USERID: "20211201",
+      USERID: employeeId,
     };
 
     try {
@@ -95,7 +122,7 @@ function User() {
 
   const fetchDataCart = async (e) => {
     const postData = {
-      USERID: "20211201",
+      USERID: employeeId,
     };
 
     try {
@@ -128,7 +155,7 @@ function User() {
 
   const fetchDataDownload = async (e) => {
     const postData = {
-      USERID: "20211201",
+      USERID: employeeId,
     };
 
     try {
@@ -180,7 +207,7 @@ function User() {
     } catch (err) {
       console.log(err);
     }
-    
+
     fetchDataFavorite();
   };
 
@@ -188,7 +215,7 @@ function User() {
     //console.log(e.row.SEQ)
 
     const postData = {
-      USERID: "20211201",
+      USERID: employeeId,
       ID_LIST: e.row.SEQ,
     };
 
@@ -232,7 +259,7 @@ function User() {
         responseType: "blob",
         params: {
           id: selectionDownload[0],
-          userid: "20211201",
+          userid: employeeId,
           platform: "WEB",
         },
       }).then((response1) => {
@@ -266,14 +293,14 @@ function User() {
       selectedRow[0].NM_LIST +
       ".zip";
 
-      console.log(name)
+    console.log(name);
 
     axios({
       url: baseuri + "downloadFavorite",
       responseType: "blob",
       params: {
         id_list: selectedRow[0].SEQ,
-        userid: "20211201",
+        userid: employeeId,
         platform: "WEB",
         name: name,
       },
