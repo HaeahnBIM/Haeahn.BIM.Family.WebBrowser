@@ -61,15 +61,16 @@ function User() {
   const [employeeId, setEmployeeId] = useState("");
 
   useEffect(() => {
-    fetchDataFavorite();
-    fetchDataCart();
-    fetchDataDownload();
 
     LoginByUUID(uuid).then((response) => {
       let user = JSON.parse(JSON.stringify(response.data));
       setEmployeeId(user.resultMessage);
+
+      fetchDataFavorite(user.resultMessage);
+      fetchDataCart(user.resultMessage);
+      fetchDataDownload(user.resultMessage);
     });
-  }, []);
+  }, [employeeId]);
 
   const LoginByUUID = (UUID) => {
     try {
@@ -88,8 +89,9 @@ function User() {
   };
 
   const fetchDataFavorite = async (e) => {
+    console.log(e)
     const postData = {
-      USERID: employeeId,
+      USERID: e,
     };
 
     try {
@@ -121,8 +123,9 @@ function User() {
   };
 
   const fetchDataCart = async (e) => {
+    console.log(e)
     const postData = {
-      USERID: employeeId,
+      USERID: e,
     };
 
     try {
@@ -154,8 +157,9 @@ function User() {
   };
 
   const fetchDataDownload = async (e) => {
+    console.log(e)
     const postData = {
-      USERID: employeeId,
+      USERID: e,
     };
 
     try {

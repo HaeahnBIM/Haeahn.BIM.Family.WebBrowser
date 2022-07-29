@@ -66,6 +66,7 @@ function Merge() {
         setFamilyFiltered(data);
       });
   };
+
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -73,6 +74,7 @@ function Merge() {
     textAlign: "center",
     color: theme.palette.text.secondary,
   }));
+
   const fetchDataReport = async (e) => {
     try {
       const res = await fetch(baseuri + "report", {
@@ -178,10 +180,7 @@ function Merge() {
     for (let i = 0; i < filterCondition.length; i++) {
       postData[filterCondition[i].key] = filterCondition[i].checked;
     }
-
-
     
-
     console.log(JSON.stringify(postData))
   };
 

@@ -34,7 +34,6 @@ function Login() {
   };
 
   const GetUserUUID = async (EMP_NO) => {
-    //console.log(EMP_NO);
     try {
       return axios.post(
         "https://api.haeahn.com/api/huserlogin",
