@@ -1,4 +1,4 @@
-import React ,{useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import Dummy from "./api/Dummy.json";
@@ -25,7 +25,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import Moment from 'moment';
+import Moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -79,17 +79,29 @@ const columnsRelation = [
 
 const _rowHeight = 30;
 
-function App ()  {
-  
+function App() {
   const location = useLocation();
 
-  const [startDate, setStartDate] = useState(Moment().subtract(1, 'month').startOf('day').format('YYYY-MM-DD'));
-  const [endDate, setEndDate] = useState(Moment().subtract(1, 'day').startOf('day').format('YYYY-MM-DD'));
-  const [loginId, setLoginId] = useState(location.state.userObj.resultMail.substring(0, location.state.userObj.resultMail.indexOf('@')));
-  const [employeeId, setEmployeeId] = useState(location.state.userObj.resultMessage);
-  const [employeeName, setEmployeeName] = useState(location.state.userObj.resultUserName);
+  const [startDate, setStartDate] = useState(
+    Moment().subtract(1, "month").startOf("day").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(
+    Moment().subtract(1, "day").startOf("day").format("YYYY-MM-DD")
+  );
+  const [loginId, setLoginId] = useState(
+    location.state.userObj.resultMail.substring(
+      0,
+      location.state.userObj.resultMail.indexOf("@")
+    )
+  );
+  const [employeeId, setEmployeeId] = useState(
+    location.state.userObj.resultMessage
+  );
+  const [employeeName, setEmployeeName] = useState(
+    location.state.userObj.resultUserName
+  );
   const [uuid, setUuid] = useState(location.state.uuid);
-  
+
   const [filterCategory, setFilterCategory] = useState(Dummy["카테고리"]);
   const [windows, setWindows] = useState(Dummy["창유형"]);
   const [doors, setDoors] = useState(Dummy["문유형"]);
@@ -123,14 +135,11 @@ function App ()  {
   const handleCloseSnackbar = () => setSnackbar(null);
 
   useEffect(() => {
-    console.log(loginId, employeeId, employeeName, uuid)
+    console.log(loginId, employeeId, employeeName, uuid);
     fetchTableFamily();
     //setFinishOptions(windows.concat(doors));
     //setFinishOptions([windows, doors]);
-    
   }, []);
-
-
 
   const fetchTableFamily = async () => {
     var url = new URL(baseuri + "families");
@@ -435,10 +444,10 @@ function App ()  {
   };
 
   const openInNewTab = (url) => {
-    const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
-    if (newWindow) newWindow.opener = null
-  }
-  
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (newWindow) newWindow.opener = null;
+  };
+
   const handleClickUser = (event) => {
     console.log("/User");
 
@@ -994,16 +1003,14 @@ function App ()  {
   }
 
   const handleClickConfirmAdd = async () => {
-    console.log(newFavoriteName);
-
-    if (newFavoriteName === ""){
+    if (newFavoriteName === "") {
       return;
     }
 
     const postData = {
       NM_LIST: newFavoriteDesc,
       DSCRP: newFavoriteName,
-      USERID: '20211201'
+      USERID: employeeId,
     };
 
     try {
@@ -1035,7 +1042,7 @@ function App ()  {
       console.log(err);
     }
     setDrawerChange(false);
-    
+
     setNewFavoriteName("");
     setNewFavoriteDesc("");
   };
@@ -1392,6 +1399,6 @@ function App ()  {
       </div>
     </div>
   );
-};
+}
 
 export default App;
