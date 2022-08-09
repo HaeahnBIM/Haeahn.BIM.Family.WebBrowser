@@ -22,7 +22,7 @@ const FavList = (props) => {
 
   useEffect(() => {
     fetchDataFavorite();
-  }, []);
+  });
 
   const fetchDataFavorite = async (e) => {
     const postData = {
@@ -52,8 +52,6 @@ const FavList = (props) => {
         data: data,
       };
       setFavorite(data);
-
-      console.log(data);
     } catch (err) {
       console.log(err);
     }
@@ -63,10 +61,10 @@ const FavList = (props) => {
     const postData = {
       ID_FML: selectedFamily.SEQ,
       ID_LIST: favId,
-      USERID: '20211201'
+      USERID: employeeId,
     };
 
-    console.log(JSON.stringify(postData));
+    console.log("postData", postData)
 
     try {
       const res = await fetch(baseuri + "addFavorite", {
@@ -91,15 +89,13 @@ const FavList = (props) => {
         data: data,
       };
       //setFavorite(data);
-
-      console.log(data);
     } catch (err) {
       console.log(err);
     }
   };
 
   const handleListItemClick = (event, value) => {
-    //console.log(value.SEQ, selectedFamily);
+    console.log("const handleListItemClick = (event, value)", value.SEQ, selectedFamily);
     //setSelectedIndex(value.SEQ);
     handleAddFavorite(selectedFamily, value.SEQ);
   };
@@ -119,7 +115,8 @@ const FavList = (props) => {
               onClick={(event) => handleListItemClick(event, value)}
               dense
             >
-              <img style={{ margin: "0px 20px 0px 0px" }}
+              <img
+                style={{ margin: "0px 20px 0px 0px" }}
                 src={`data:image/png;base64,${value.IMG_SYM}`}
                 width="70"
                 height="70"

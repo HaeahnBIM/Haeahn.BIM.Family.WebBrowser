@@ -61,41 +61,117 @@ function User() {
   const [employeeId, setEmployeeId] = useState("");
 
   useEffect(() => {
+    
+    const fetchLoginUUID = async () => {
+      try {
+        let data = new URLSearchParams();
+        data.append(`UUID`, uuid);
 
-    LoginByUUID(uuid).then((response) => {
-      let user = JSON.parse(JSON.stringify(response.data));
-      setEmployeeId(user.resultMessage);
+        const options = {
+          method: `POST`,
+          body: data,
+        };
 
-      fetchDataFavorite(user.resultMessage);
-      fetchDataCart(user.resultMessage);
-      fetchDataDownload(user.resultMessage);
-    });
-  }, [employeeId]);
+        const response = await fetch(
+          "https://api.haeahn.com/api/uuidlogin",
+          options
+        );
+        const json = await response.json();
+        console.log(json);
+        setEmployeeId(json.resultMessage);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
 
-  const LoginByUUID = (UUID) => {
-    try {
-      return axios.post(
-        "https://api.haeahn.com/api/uuidlogin",
-        new URLSearchParams({ UUID }),
-        {
+    const fetchDataFavorite = async () => {
+      const postData = {
+        USERID: employeeId,
+      };
+      console.log(postData)
+
+      try {
+        const response = await fetch(baseuri + "favorite", {
+          method: "POST",
+          mode: "cors",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+          body: JSON.stringify(postData),
+        });
 
-  const fetchDataFavorite = async (e) => {
-    console.log(e)
-    const postData = {
-      USERID: e,
+        const json = await response.json();
+        //console.log(json);
+        setFavorite(json);
+      } catch (err) {
+        console.error(err);
+      }
     };
 
+    const fetchDataCart = async () => {
+      const postData = {
+        USERID: employeeId,
+      };
+      console.log(postData)
+      
+      try {
+        const response = await fetch(baseuri + "cart", {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        });
+
+        const json = await response.json();
+        //console.log(json);
+        setCart(json);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const fetchDataDownload = async () => {
+      const postData = {
+        USERID: employeeId,
+      };
+      console.log(postData)
+      
+      try {
+        const response = await fetch(baseuri + "downloadLog", {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        });
+
+        const json = await response.json();
+        //console.log(json);
+        setDownload(json);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchLoginUUID();
+    fetchDataFavorite();
+    fetchDataCart();
+    fetchDataDownload();
+
+  }, [uuid, employeeId]);
+
+
+  const fetchDataFavorite = async () => {
+    const postData = {
+      USERID: employeeId,
+    };
+    console.log(postData)
+
     try {
-      const res = await fetch(baseuri + "favorite", {
+      const response = await fetch(baseuri + "favorite", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -103,90 +179,12 @@ function User() {
         },
         body: JSON.stringify(postData),
       });
-      if (!res.ok) {
-        const message = `An error has occured: ${res.status} - ${res.statusText}`;
-        throw new Error(message);
-      }
-      const data = await res.json();
-      const result = {
-        status: res.status + "-" + res.statusText,
-        headers: {
-          "Content-Type": res.headers.get("Content-Type"),
-          "Content-Length": res.headers.get("Content-Length"),
-        },
-        data: data,
-      };
-      setFavorite(data);
+
+      const json = await response.json();
+      //console.log(json);
+      setFavorite(json);
     } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchDataCart = async (e) => {
-    console.log(e)
-    const postData = {
-      USERID: e,
-    };
-
-    try {
-      const res = await fetch(baseuri + "cart", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
-      if (!res.ok) {
-        const message = `An error has occured: ${res.status} - ${res.statusText}`;
-        throw new Error(message);
-      }
-      const data = await res.json();
-      const result = {
-        status: res.status + "-" + res.statusText,
-        headers: {
-          "Content-Type": res.headers.get("Content-Type"),
-          "Content-Length": res.headers.get("Content-Length"),
-        },
-        data: data,
-      };
-      setCart(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchDataDownload = async (e) => {
-    console.log(e)
-    const postData = {
-      USERID: e,
-    };
-
-    try {
-      const res = await fetch(baseuri + "downloadLog", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
-      if (!res.ok) {
-        const message = `An error has occured: ${res.status} - ${res.statusText}`;
-        throw new Error(message);
-      }
-      const data = await res.json();
-      const result = {
-        status: res.status + "-" + res.statusText,
-        headers: {
-          "Content-Type": res.headers.get("Content-Type"),
-          "Content-Length": res.headers.get("Content-Length"),
-        },
-        data: data,
-      };
-      setDownload(data);
-    } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -215,12 +213,39 @@ function User() {
     fetchDataFavorite();
   };
 
-  const handleGetFavoriteItems = async (e) => {
-    //console.log(e.row.SEQ)
+  const handleDeleteFavoriteItem = async (e) => {
+    const postData = {
+      ID_FML: selectionFavItem[0],
+      ID_LIST: selectionFav[0],
+      USERID: employeeId,
+    };
 
+    console.log(postData)
+    try {
+      const res = await fetch(baseuri + "deleteFavoriteItem", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setSelectionFav(selectionFav[0]);
+    handleGetFavoriteItems(selectionFav[0]);
+  };
+
+  const handleGetFavoriteItems = async (seq) => {
     const postData = {
       USERID: employeeId,
-      ID_LIST: e.row.SEQ,
+      ID_LIST: seq,
     };
 
     try {
@@ -434,7 +459,9 @@ function User() {
                 getRowId={(row) => row.SEQ}
                 rowHeight={35}
                 rowsPerPageOptions={[100]}
-                onRowClick={handleGetFavoriteItems}
+                onRowClick={(event) => {
+                  handleGetFavoriteItems(event.row.SEQ);
+                }}
                 onSelectionModelChange={(newSelectionModel) => {
                   setSelectionFav(newSelectionModel);
                 }}
@@ -450,7 +477,7 @@ function User() {
               >
                 <button
                   style={{ height: "25px", margin: "5px" }}
-                  onClick={handleDeleteFavorite}
+                  onClick={handleDeleteFavoriteItem}
                 >
                   delete favorite Item
                 </button>

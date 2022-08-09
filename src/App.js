@@ -45,6 +45,7 @@ const columnsFamily = [
   { field: "CountDown", headerName: "다운로드", width: 80 },
   { field: "CountReport", headerName: "오류신고", width: 80 },
   { field: "IsNG", headerName: "품질", width: 80 },
+  { field: "RvtVersion", headerName: "버전", width: 100 },
 ];
 
 const columnsSymbol = [
