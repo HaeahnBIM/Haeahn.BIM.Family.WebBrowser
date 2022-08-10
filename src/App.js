@@ -6,10 +6,9 @@ import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
-import DepartmentFilter from "./components/DepartmentFilter";
-import CategoryFilter from "./components/CategoryFilter";
-import WindowTypeFilter from "./components/WindowTypeFilter";
-import DoorTypeFilter from "./components/DoorTypeFilter";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Filter from "./components/Filter";
+import TitlebarImageList from "./components/TitlebarImageList";
 import FavList from "./components/FavList";
 import InputBase from "@mui/material/InputBase";
 import Input from "@mui/material/Input";
@@ -35,6 +34,7 @@ const columnsFamily = [
   { field: "SEQ", headerName: "ID", width: 60 },
   { field: "NM_CATG", headerName: "NM_CATG", width: 100 },
   { field: "NM_FML", headerName: "NM_FML", width: 250 },
+  { field: "RvtVersion", headerName: "버전", width: 100 },
   { field: "TotalCount", headerName: "총 유리개수", width: 100 },
   { field: "ElevCount", headerName: "유리 짝", width: 100 },
   { field: "HorzCount", headerName: "가로개수", width: 100 },
@@ -45,7 +45,6 @@ const columnsFamily = [
   { field: "CountDown", headerName: "다운로드", width: 80 },
   { field: "CountReport", headerName: "오류신고", width: 80 },
   { field: "IsNG", headerName: "품질", width: 80 },
-  { field: "RvtVersion", headerName: "버전", width: 100 },
 ];
 
 const columnsSymbol = [
@@ -103,6 +102,7 @@ function App() {
   );
   const [uuid, setUuid] = useState(location.state.uuid);
 
+  const [versionFilter, setVersionFilter] = useState(Dummy["버전"]);
   const [filterCategory, setFilterCategory] = useState(Dummy["카테고리"]);
   const [windows, setWindows] = useState(Dummy["창유형"]);
   const [doors, setDoors] = useState(Dummy["문유형"]);
@@ -128,6 +128,7 @@ function App() {
   const [finishOptions, setFinishOptions] = useState([]);
   const [showWindow, setShowWindow] = useState(true);
   const [showDoor, setShowDoor] = useState(true);
+  const [showImageList, setShowImageList] = useState(true);
   const [state, setState] = useState({ right: false });
   const [drawerChange, setDrawerChange] = useState(false);
   const [newFavoriteName, setNewFavoriteName] = useState("");
@@ -732,56 +733,6 @@ function App() {
     );
   };
 
-  const filteringCategoryFamily = (filters, filteredFamilies) => {
-    let filtered = [];
-
-    for (let i = 0; i < filters.length; i++) {
-      const filter = filters[i];
-      var f = filter.key;
-      switch (f) {
-        case "window":
-          filtered = filtered.concat(
-            filteredFamilies.filter((data) => data.NM_CATG === "Windows")
-          );
-          break;
-        case "door":
-          filtered = filtered.concat(
-            filteredFamilies.filter((data) => data.NM_CATG === "Doors")
-          );
-          break;
-        default:
-          return "";
-      }
-    }
-
-    return filtered;
-  };
-
-  const filteringDoubleFamily = (filters, filteredFamilies) => {
-    let filtered = [];
-
-    for (let i = 0; i < filters.length; i++) {
-      const filter = filters[i];
-      var f = filter.key;
-      switch (f) {
-        case "window_single":
-          filtered = filtered.concat(
-            filteredFamilies.filter((data) => data.IsDouble === false)
-          );
-          break;
-        case "window_double":
-          filtered = filtered.concat(
-            filteredFamilies.filter((data) => data.IsDouble)
-          );
-          break;
-        default:
-          return "";
-      }
-    }
-
-    return filtered;
-  };
-
   const filteringCornerFamily = (filters, filteredFamilies) => {
     let filtered = [];
 
@@ -805,6 +756,33 @@ function App() {
     }
 
     return filtered;
+  };
+
+  const handleChangeVersion = (e) => {
+    setFamilyFiltered([...dataFamily]);
+
+    let isFilterTrue = false;
+    for (let i = 0; i < versionFilter.length; i++) {
+      if (versionFilter[i].checked) {
+        isFilterTrue = true;
+        break;
+      }
+    }
+
+    if (isFilterTrue === false) {
+      return;
+    }
+
+    let filters_True = [];
+    for (let i = 0; i < versionFilter.length; i++) {
+      if (versionFilter[i].checked) {
+        filters_True.push(versionFilter[i]);
+      }
+    }
+
+    let filtered = filteringVersionFamily(filters_True, dataFamily);
+
+    setFamilyFiltered(filtered);
   };
 
   const handleChangeCategory = (e) => {
@@ -936,6 +914,76 @@ function App() {
     setDrawerChange(false);
   };
 
+  const filteringVersionFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      const f = filter.value;
+
+      filtered = filtered.concat(filteredFamilies.filter((data) => {
+        if (data.RvtVersion !== null) {
+          if (data.RvtVersion.includes(f)) {
+            return data;
+          }
+        }
+      }));
+    }
+    //console.log(filtered)
+
+    return filtered;
+  };
+
+  const filteringCategoryFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      var f = filter.key;
+      switch (f) {
+        case "window":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.NM_CATG === "Windows")
+          );
+          break;
+        case "door":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.NM_CATG === "Doors")
+          );
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return filtered;
+  };
+
+  const filteringDoubleFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      var f = filter.key;
+      switch (f) {
+        case "window_single":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsDouble === false)
+          );
+          break;
+        case "window_double":
+          filtered = filtered.concat(
+            filteredFamilies.filter((data) => data.IsDouble)
+          );
+          break;
+        default:
+          return "";
+      }
+    }
+
+    return filtered;
+  };
+
   const handleGetSelectedModel = () => {
     //console.log(familyFiltered.length)
     //console.log(selectionModel[0])
@@ -1057,7 +1105,7 @@ function App() {
           spacing={2}
         >
           <Stack spacing={1} width="250px">
-            <div>
+            {/* <div>
               총 유리개수
               <TextField
                 style={{ margin: "0px 30px 0px 10px", width: "80px" }}
@@ -1100,18 +1148,24 @@ function App() {
                 value={searchVert}
                 onChange={handleChangeVert}
               />
+            </div> */}
+            <div onChange={handleChangeVersion}>
+              <Filter filterList={versionFilter} filterName="버전"></Filter>
             </div>
             <div onChange={handleChangeCategory}>
-              <CategoryFilter filterCategory={filterCategory}></CategoryFilter>
+              <Filter
+                filterList={filterCategory}
+                filterName="카테고리"
+              ></Filter>
             </div>
             {showWindow && (
               <div onChange={handleChangeWindowType}>
-                <WindowTypeFilter filterWindows={windows}></WindowTypeFilter>
+                <Filter filterList={windows} filterName="Windows"></Filter>
               </div>
             )}
             {showDoor && (
               <div onChange={handleChangeDoorType}>
-                <DoorTypeFilter filterDoors={doors}></DoorTypeFilter>
+                <Filter filterList={doors} filterName="Doors"></Filter>
               </div>
             )}
           </Stack>
@@ -1169,7 +1223,22 @@ function App() {
                     spacing={2}
                     display="flex"
                     justifyContent="flex-end"
+                    alignItems="center"
                   >
+                    <FormControlLabel
+                      key="Image"
+                      label="Image"
+                      value="Image"
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={showImageList}
+                          onClick={(event) => {
+                            setShowImageList(event.target.checked);
+                          }}
+                        />
+                      }
+                    />
                     <button
                       style={{ height: "25px", width: "80px" }}
                       onClick={handleDownload}
@@ -1203,19 +1272,23 @@ function App() {
                   </Stack>
                 </Stack>
 
-                <DataGrid
-                  rows={familyFiltered}
-                  columns={columnsFamily}
-                  getRowId={(row) => row.SEQ}
-                  rowHeight={_rowHeight}
-                  rowsPerPageOptions={[100]}
-                  onRowClick={handlePreviewImageAndSameData}
-                  //checkboxSelection
-                  onSelectionModelChange={(newSelectionModel) => {
-                    setSelectionModel(newSelectionModel);
-                  }}
-                  selectionModel={selectionModel}
-                />
+                {showImageList ? (
+                  <TitlebarImageList itemData={familyFiltered} />
+                ) : (
+                  <DataGrid
+                    rows={familyFiltered}
+                    columns={columnsFamily}
+                    getRowId={(row) => row.SEQ}
+                    rowHeight={_rowHeight}
+                    rowsPerPageOptions={[100]}
+                    onRowClick={handlePreviewImageAndSameData}
+                    //checkboxSelection
+                    onSelectionModelChange={(newSelectionModel) => {
+                      setSelectionModel(newSelectionModel);
+                    }}
+                    selectionModel={selectionModel}
+                  />
+                )}
 
                 <Stack direction={"row"} spacing={2} margin="5px">
                   <span style={{ width: "100%" }}>Equal Volume</span>

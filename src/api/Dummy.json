@@ -18,6 +18,12 @@
         {"key":"door","value":"문", "group":"category", "checked":false}
     ],
     
+    "버전": [
+        {"key":"2021","value":"2021", "group":"version", "checked":true},
+        {"key":"2022","value":"2022", "group":"version", "checked":true},
+        {"key":"2023","value":"2023", "group":"version", "checked":true}
+    ],
+    
     "창유형": [
         {"key":"window_single","value":"단창", "group":"isdouble", "checked":false},
         {"key":"window_double","value":"이중창", "group":"isdouble", "checked":false},

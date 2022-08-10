@@ -1,13 +1,55 @@
 import { Stack } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { DataGrid, GridColDef, GridApi, GridCellValue } from "@mui/x-data-grid";
 import fileDownload from "js-file-download";
 import axios from "axios";
 import Moment from "moment";
 import moment from "moment";
-import { useLocation, useSearchParams } from "react-router-dom";
+import SimpleDialog from "./components/SimpleDialog";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import PropTypes from "prop-types";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
+const baseuri2 = "https://ueapi.haeahn.com/api/FamilyAutomation/";
+
+const RenderDate = (props) => {
+
+  const handleDownload = async () => {
+
+    const name = moment().format("YYYYMMDDHHmmss") + ".zip";
+    const postData = {
+      SEQ: props.row.SEQ,
+      FILENAME: name,
+      DOWNLOAD_TYPE: 'ORDER',
+    };
+
+    try {
+      const res = await fetch(baseuri2 + "downloadItems", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      fileDownload(res.data, name);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (props.value === "작업완료") {
+    return <Button variant="text" onClick={handleDownload}>{props.value}</Button>;
+  } else {
+    return <div>{props.value}</div>;
+  }
+};
 
 const columnsFavorite = [
   { field: "SEQ", headerName: "SEQ", width: 80 },
@@ -35,6 +77,13 @@ const columnsDownload = [
   { field: "DT_DOWN", headerName: "DT_DOWN", width: 200 },
 ];
 
+const columnsOrder = [
+  { field: "SEQ", headerName: "SEQ", width: 60 },
+  { field: "TYP_ADN", headerName: "TYP_ADN", width: 150 },
+  { field: "DT_ORDR", headerName: "DT_ORDR", width: 200 },
+  { field: "STATE", headerName: "STATE", width: 100, renderCell: RenderDate, align:'center' },
+];
+
 const columnsCart = [
   { field: "ID_FML", headerName: "ID_FML", width: 100 },
   { field: "NM_CATG", headerName: "NM_CATG", width: 100 },
@@ -53,15 +102,29 @@ function User() {
   const [dataFavoriteModItems, setFavoriteModItems] = useState([]);
   const [dataCart, setCart] = useState([]);
   const [dataDownload, setDownload] = useState([]);
+  const [dataOrder, setOrder] = useState([]);
   const [selectionFav, setSelectionFav] = useState([]);
   const [selectionFavItem, setSelectionFavItem] = useState([]);
   const [selectionDownload, setSelectionDownload] = useState([]);
   const [editRowsModel, setEditRowsModel] = useState({});
   const [uuid, setUuid] = useState(params.get("uuid"));
   const [employeeId, setEmployeeId] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState("");
+
+  const handleClickOpen = () => {
+    if (selectionFav[0] === undefined) {
+      return;
+    }
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedValue(value);
+  };
 
   useEffect(() => {
-    
     const fetchLoginUUID = async () => {
       try {
         let data = new URLSearchParams();
@@ -77,7 +140,7 @@ function User() {
           options
         );
         const json = await response.json();
-        console.log(json);
+        //console.log(json);
         setEmployeeId(json.resultMessage);
       } catch (error) {
         console.log("error", error);
@@ -88,7 +151,7 @@ function User() {
       const postData = {
         USERID: employeeId,
       };
-      console.log(postData)
+      //console.log(postData);
 
       try {
         const response = await fetch(baseuri + "favorite", {
@@ -112,8 +175,8 @@ function User() {
       const postData = {
         USERID: employeeId,
       };
-      console.log(postData)
-      
+      console.log(postData);
+
       try {
         const response = await fetch(baseuri + "cart", {
           method: "POST",
@@ -136,8 +199,8 @@ function User() {
       const postData = {
         USERID: employeeId,
       };
-      console.log(postData)
-      
+      console.log(postData);
+
       try {
         const response = await fetch(baseuri + "downloadLog", {
           method: "POST",
@@ -156,19 +219,41 @@ function User() {
       }
     };
 
+    const fetchDataOrder = async () => {
+      const postData = {
+        ID_USER_ORDR: employeeId,
+      };
+
+      try {
+        const response = await fetch(baseuri2 + "queue", {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        });
+
+        const json = await response.json();
+        //console.log(json);
+        setOrder(json);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchLoginUUID();
     fetchDataFavorite();
     fetchDataCart();
     fetchDataDownload();
-
+    fetchDataOrder();
   }, [uuid, employeeId]);
-
 
   const fetchDataFavorite = async () => {
     const postData = {
       USERID: employeeId,
     };
-    console.log(postData)
+    console.log(postData);
 
     try {
       const response = await fetch(baseuri + "favorite", {
@@ -220,7 +305,7 @@ function User() {
       USERID: employeeId,
     };
 
-    console.log(postData)
+    console.log(postData);
     try {
       const res = await fetch(baseuri + "deleteFavoriteItem", {
         method: "POST",
@@ -271,6 +356,29 @@ function User() {
         data: data,
       };
       setFavoriteItems(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleOrder = async () => {
+    const postData = {
+      ID_LIST: selectionFav[0],
+    };
+
+    try {
+      const res = await fetch(baseuri + "deleteFavoriteList", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -442,6 +550,12 @@ function User() {
               >
                 <button
                   style={{ height: "25px", margin: "5px" }}
+                  onClick={handleClickOpen}
+                >
+                  order
+                </button>
+                <button
+                  style={{ height: "25px", margin: "5px" }}
                   onClick={handleDownloadFavorite}
                 >
                   download
@@ -452,6 +566,13 @@ function User() {
                 >
                   delete favorite
                 </button>
+                <SimpleDialog
+                  selectedValue={selectedValue}
+                  open={open}
+                  onClose={handleClose}
+                  selectedFav={selectionFav[0]}
+                  userId={employeeId}
+                />
               </Stack>
               <DataGrid
                 rows={dataFavorite}
@@ -506,31 +627,31 @@ function User() {
             </Stack>
           </Stack>
 
-          <div>다운로드 이력</div>
+          <div>주문 이력</div>
           <Stack
             direction="row"
             spacing={2}
             display="flex"
             justifyContent="flex-end"
           >
-            <button
+            {/* <button
               style={{ height: "25px", margin: "5px" }}
               onClick={handleDownload}
             >
               downloads
-            </button>
+            </button> */}
           </Stack>
 
           <DataGrid
-            rows={dataDownload}
-            columns={columnsDownload}
+            rows={dataOrder}
+            columns={columnsOrder}
             getRowId={(row) => row.SEQ}
             rowHeight={35}
             rowsPerPageOptions={[100]}
-            onSelectionModelChange={(newSelectionModel) => {
-              setSelectionDownload(newSelectionModel);
-            }}
-            selectionModel={selectionDownload}
+            // onSelectionModelChange={(newSelectionModel) => {
+            //   setSelectionDownload(newSelectionModel);
+            // }}
+            // selectionModel={selectionDownload}
           />
         </Stack>
       </main>

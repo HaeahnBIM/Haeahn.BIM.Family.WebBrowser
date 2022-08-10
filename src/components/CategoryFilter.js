@@ -3,7 +3,6 @@ import "./styles/DepartmentFilter.css";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-//import Dummy from "../api/Dummy.json";
 
 export default function CategoryFilter({ filterCategory }) {  
   useEffect(() => {
