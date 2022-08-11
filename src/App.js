@@ -733,6 +733,14 @@ function App() {
     );
   };
 
+  const handleClickCentral = (event) => {
+    window.open(
+      `./Central`,
+      "_blank",
+      "location=yes,height=850,width=1140,left=0,location=0,scrollbars=yes,status=yes"
+    );
+  };
+
   const filteringCornerFamily = (filters, filteredFamilies) => {
     let filtered = [];
 
@@ -1105,50 +1113,6 @@ function App() {
           spacing={2}
         >
           <Stack spacing={1} width="250px">
-            {/* <div>
-              총 유리개수
-              <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
-                id="search-total"
-                type="text"
-                variant="standard"
-                value={searchTotal}
-                onChange={handleChangeTotal}
-              />
-            </div>
-            <div>
-              유리짝 수
-              <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
-                id="search-elev"
-                type="text"
-                variant="standard"
-                value={searchElev}
-                onChange={handleChangeElev}
-              />
-            </div>
-            <div>
-              가로개수
-              <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
-                id="search-horz"
-                type="text"
-                variant="standard"
-                value={searchHorz}
-                onChange={handleChangeHorz}
-              />
-            </div>
-            <div>
-              세로개수
-              <TextField
-                style={{ margin: "0px 30px 0px 10px", width: "80px" }}
-                id="search-vert"
-                type="text"
-                variant="standard"
-                value={searchVert}
-                onChange={handleChangeVert}
-              />
-            </div> */}
             <div onChange={handleChangeVersion}>
               <Filter filterList={versionFilter} filterName="버전"></Filter>
             </div>
@@ -1205,6 +1169,12 @@ function App() {
                 onClick={handleClickMerge}
               >
                 중복관리
+              </button>
+              <button
+                style={{ height: "30px", margin: "5px", width: "80px" }}
+                onClick={handleClickCentral}
+              >
+                CENTRAL
               </button>
             </Stack>
 

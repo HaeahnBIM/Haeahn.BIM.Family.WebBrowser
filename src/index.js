@@ -7,6 +7,7 @@ import App from "./App";
 import User from "./User";
 import Report from "./Report";
 import Merge from "./Merge";
+import Central from "./Central";
 import FavList from "./components/FavList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -19,6 +20,7 @@ root.render(
       <Route path="/Report" element={<Report />} />
       <Route path="/Merge" element={<Merge />} />
       <Route path="/FavList" element={<FavList />} />
+      <Route path="/Central" element={<Central />} />
     </Routes>
   </BrowserRouter>
 );
