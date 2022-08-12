@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Divider, Stack } from "@mui/material";
 import Filter from "./components/Filter";
 import Dummy from "./api/Dummy.json";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
+const baseuri2 = "https://ueapi.haeahn.com/api/FamilyAutomation/";
 
 const columnsCentral = [
   { field: "SEQ", headerName: "ID", width: 60 },
@@ -20,6 +22,11 @@ const columnsModel = [
 ];
 
 function Central() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const [uuid, setUuid] = useState(params.get("uuid"));
+  const [employeeId, setEmployeeId] = useState("");
+
   const [central, setCentral] = useState([]);
   const [centralModel, setCentralModel] = useState([]);
   const [selectedCentral, setSelectedCentral] = useState([]);
@@ -27,6 +34,27 @@ function Central() {
   const [versionFilter, setVersionFilter] = useState(Dummy["버전"]);
 
   useEffect(() => {
+    const fetchLoginUUID = async () => {
+      try {
+        let data = new URLSearchParams();
+        data.append(`UUID`, uuid);
+
+        const options = {
+          method: `POST`,
+          body: data,
+        };
+
+        const response = await fetch(
+          "https://api.haeahn.com/api/uuidlogin",
+          options
+        );
+        const json = await response.json();
+        setEmployeeId(json.resultMessage);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     const handleCentral = async () => {
       try {
         const response = await fetch(baseuri + "centrals", {
@@ -43,8 +71,9 @@ function Central() {
       }
     };
 
+    fetchLoginUUID();
     handleCentral();
-  }, [central]);
+  }, []);
 
   const _rowHeight = 30;
 
@@ -72,8 +101,31 @@ function Central() {
 
   const handleChangeVersion = (e) => {};
 
-  const handleExtractFamily = () => {
-    console.log(selectedModel);
+  const handleExtractFamily = async (event) => {
+
+    const postData = {
+      TYP_ADN: "extractfamily",
+      MODEL_PATH: selectedModel,
+      ID_USER_ORDR: employeeId
+    };
+
+    console.log(JSON.stringify(postData))
+
+    try {
+      const response = await fetch(baseuri2 + "setOrder", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+
+      //const json = await response.json();
+      //setCentralModel(json);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -156,7 +208,10 @@ function Central() {
                     display="flex"
                     justifyContent="flex-end"
                   >
-                    <button onClick={handleExtractFamily} style={{ height: "25px", width: "150px" }}>
+                    <button
+                      onClick={handleExtractFamily}
+                      style={{ height: "25px", width: "150px" }}
+                    >
                       Family Extraction
                     </button>
                   </Stack>
@@ -167,9 +222,13 @@ function Central() {
                     rows={centralModel}
                     columns={columnsModel}
                     checkboxSelection
-                    getRowId={(row) => row.Filepath}
+                    disableSelectionOnClick 
+                    getRowId={(row) => row.RevitVersion + "|"+ row.Filepath}
                     rowHeight={_rowHeight}
                     rowsPerPageOptions={[100]}
+                    onRowClick={(event) => {
+                      handleExtractFamily(event);
+                    }}
                     onSelectionModelChange={(sel) => {
                       setSelectedModel(sel);
                     }}

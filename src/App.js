@@ -735,7 +735,7 @@ function App() {
 
   const handleClickCentral = (event) => {
     window.open(
-      `./Central`,
+      `./Central?uuid=${uuid}`,
       "_blank",
       "location=yes,height=850,width=1140,left=0,location=0,scrollbars=yes,status=yes"
     );

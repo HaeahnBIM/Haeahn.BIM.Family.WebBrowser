@@ -44,7 +44,7 @@ const RenderDate = (props) => {
     }
   };
 
-  if (props.value === "작업완료") {
+  if (props.value === "작업완료" && props.row.TYP_ADN === 'upgrade') {
     return <Button variant="text" onClick={handleDownload}>{props.value}</Button>;
   } else {
     return <div>{props.value}</div>;
