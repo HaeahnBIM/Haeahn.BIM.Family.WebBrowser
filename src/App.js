@@ -45,6 +45,7 @@ const columnsFamily = [
   { field: "CountDown", headerName: "다운로드", width: 80 },
   { field: "CountReport", headerName: "오류신고", width: 80 },
   { field: "IsNG", headerName: "품질", width: 80 },
+  { field: "IsStdd", headerName: "표준", width: 80 },
 ];
 
 const columnsSymbol = [
@@ -102,6 +103,7 @@ function App() {
   );
   const [uuid, setUuid] = useState(location.state.uuid);
 
+  const [stddFilter, setStddFilter] = useState(Dummy["구분"]);
   const [versionFilter, setVersionFilter] = useState(Dummy["버전"]);
   const [filterCategory, setFilterCategory] = useState(Dummy["카테고리"]);
   const [windows, setWindows] = useState(Dummy["창유형"]);
@@ -137,7 +139,7 @@ function App() {
   const handleCloseSnackbar = () => setSnackbar(null);
 
   useEffect(() => {
-    console.log(loginId, employeeId, employeeName, uuid);
+    //console.log(loginId, employeeId, employeeName, uuid);
     fetchTableFamily();
     //setFinishOptions(windows.concat(doors));
     //setFinishOptions([windows, doors]);
@@ -388,6 +390,32 @@ function App() {
       } catch (err) {
         console.log(err);
       }
+    }
+  };
+
+  const handleStdd = async (e) => {
+    const postData = {
+      SEQ: selectionModel[0],
+    };
+
+    console.log(postData);
+
+    try {
+      const res = await fetch(baseuri + "stdd", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      fetchTableFamily();
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -766,6 +794,33 @@ function App() {
     return filtered;
   };
 
+  const handleChangeStdd = (e) => {
+    setFamilyFiltered([...dataFamily]);
+
+    let isFilterTrue = false;
+    for (let i = 0; i < stddFilter.length; i++) {
+      if (stddFilter[i].checked) {
+        isFilterTrue = true;
+        break;
+      }
+    }
+
+    if (isFilterTrue === false) {
+      return;
+    }
+
+    let filters_True = [];
+    for (let i = 0; i < stddFilter.length; i++) {
+      if (stddFilter[i].checked) {
+        filters_True.push(stddFilter[i]);
+      }
+    }
+
+    let filtered = filteringStddFamily(filters_True, dataFamily);
+
+    setFamilyFiltered(filtered);
+  };
+
   const handleChangeVersion = (e) => {
     setFamilyFiltered([...dataFamily]);
 
@@ -920,6 +975,27 @@ function App() {
 
     setState({ ...state, [anchor]: open });
     setDrawerChange(false);
+  };
+
+  const filteringStddFamily = (filters, filteredFamilies) => {
+    let filtered = [];
+
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      const f = filter.key;
+
+      let val = true;
+      if (f === "stdd"){
+          val = true;
+      }else{
+        val = false;
+      }
+
+      filtered = filtered.concat(filteredFamilies.filter((data) => data.IsStdd === val));
+    }
+    //console.log(filtered)
+
+    return filtered;
   };
 
   const filteringVersionFamily = (filters, filteredFamilies) => {
@@ -1113,6 +1189,9 @@ function App() {
           spacing={2}
         >
           <Stack spacing={1} width="250px">
+            <div onChange={handleChangeStdd}>
+              <Filter filterList={stddFilter} filterName="구분"></Filter>
+            </div>
             <div onChange={handleChangeVersion}>
               <Filter filterList={versionFilter} filterName="버전"></Filter>
             </div>
@@ -1209,6 +1288,12 @@ function App() {
                         />
                       }
                     />
+                    <button
+                      style={{ height: "25px", width: "100px" }}
+                      onClick={handleStdd}
+                    >
+                      change stdd
+                    </button>
                     <button
                       style={{ height: "25px", width: "80px" }}
                       onClick={handleDownload}

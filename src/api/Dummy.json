@@ -13,6 +13,11 @@
         "연구소"
     ],
     
+    "구분": [
+        {"key":"stdd","value":"표준", "group":"stdd", "checked":true},
+        {"key":"nostdd","value":"일반", "group":"stdd", "checked":true}
+    ],
+    
     "카테고리": [
         {"key":"window","value":"창", "group":"category", "checked":false},
         {"key":"door","value":"문", "group":"category", "checked":false}
