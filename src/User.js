@@ -10,6 +10,7 @@ import SimpleDialog from "./components/SimpleDialog";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PropTypes from "prop-types";
+import Data from "./api/Data";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 const baseuri2 = "https://ueapi.haeahn.com/api/FamilyAutomation/";
@@ -274,6 +275,7 @@ function User() {
   };
 
   const handleDeleteFavorite = async (e) => {
+    Data.SetRouteLog(employeeId, "User", "FavDelete", "FUNCTION");
     const postData = {
       ID_LIST: selectionFav[0],
     };
@@ -299,6 +301,7 @@ function User() {
   };
 
   const handleDeleteFavoriteItem = async (e) => {
+    Data.SetRouteLog(employeeId, "User", "FavItemDelete", "FUNCTION");
     const postData = {
       ID_FML: selectionFavItem[0],
       ID_LIST: selectionFav[0],
@@ -406,6 +409,7 @@ function User() {
   };
 
   const handleDownloadFavorite = async () => {
+    Data.SetRouteLog(employeeId, "User", "FavDownload", "FUNCTION");
     if (selectionFav[0] === undefined) {
       return;
     }
@@ -447,6 +451,7 @@ function User() {
   };
 
   const handleClick = async (e) => {
+    Data.SetRouteLog(employeeId, "User", "FavItemRename", "FUNCTION");
     //console.log("dataFavoriteModItems", dataFavoriteModItems);
     //console.log("dataFavoriteItems", dataFavoriteItems);
 

@@ -12,6 +12,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
 import Typography from "@mui/material/Typography";
 import { blue } from "@mui/material/colors";
+import Data from "../api/Data";
 
 const orderType = ["upgrade"];
 
@@ -25,6 +26,7 @@ export default function SimpleDialog(props) {
   };
 
   const handleListItemClick = (orderType) => {
+    Data.SetRouteLog(userId, "Order", "upgrade", "FUNCTION");
     postOrder(orderType);
     onClose();
   };

@@ -28,6 +28,7 @@ import Moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Snackbar from "@mui/material/Snackbar";
+import Data from "./api/Data";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -407,6 +408,8 @@ function App() {
   };
 
   const handleStdd = async (e) => {
+    
+    Data.SetRouteLog(employeeId, "Main", "Stdd", "FUNCTION");
     const postData = {
       SEQ: selectionModel[0],
     };
@@ -436,6 +439,7 @@ function App() {
   };
 
   const handleDownload = async () => {
+    Data.SetRouteLog(employeeId, "Main", "download", "FUNCTION");
     axios({
       url: baseuri + "filename",
       params: {
@@ -495,12 +499,7 @@ function App() {
   };
 
   const handleClickUser = (event) => {
-    console.log("/User");
-
-    //<Link to="./User" target="_blank">About</Link>
-
-    //openInNewTab('./User')
-
+    Data.SetRouteLog(employeeId, "Main", "User", "ROUTE");
     window.open(
       `./User?uuid=${uuid}`,
       "_blank",
@@ -598,6 +597,7 @@ function App() {
   };
 
   const handleSetReport = async (e) => {
+    Data.SetRouteLog(employeeId, "Main", "report", "FUNCTION");
     const postData = {
       ID: selectionModel[0],
       USERID: employeeId,
@@ -623,6 +623,7 @@ function App() {
   };
 
   const handleLike = async (e) => {
+    Data.SetRouteLog(employeeId, "Main", "like", "FUNCTION");
     const postData = {
       ID: selectionModel[0],
       USERID: employeeId,
@@ -679,6 +680,8 @@ function App() {
   };
 
   const handleDeleteFavorite = async (e) => {
+    Data.SetRouteLog(employeeId, "Main", "DelFav", "FUNCTION");
+    
     const postData = {
       ID: selectionModel[0],
       USERID: employeeId,
@@ -756,8 +759,8 @@ function App() {
     }
   };
 
-  const handleClickReport = (event) => {
-    console.log("/Report");
+  const handleClickReport = (event) => {    
+    Data.SetRouteLog(employeeId, "Main", "Report", "ROUTE");
     window.open(
       "./Report",
       "_blank",
@@ -766,6 +769,7 @@ function App() {
   };
 
   const handleClickMerge = (event) => {
+    Data.SetRouteLog(employeeId, "Main", "Merge", "ROUTE");
     window.open(
       "./Merge",
       "_blank",
@@ -774,6 +778,7 @@ function App() {
   };
 
   const handleClickCentral = (event) => {
+    Data.SetRouteLog(employeeId, "Main", "Central", "ROUTE");
     window.open(
       `./Central?uuid=${uuid}`,
       "_blank",
@@ -984,6 +989,8 @@ function App() {
     ) {
       return;
     }
+
+    Data.SetRouteLog(employeeId, "Main", "Fav", "FUNCTION");
 
     setState({ ...state, [anchor]: open });
     setDrawerChange(false);

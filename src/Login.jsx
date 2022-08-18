@@ -5,6 +5,7 @@ import pageStyles from "./css/page-wrap.module.css";
 import logoImg from "./img/HAEAHN_LOGO.png";
 import { fontSize } from "@mui/system";
 import axios from "axios";
+import Data from "./api/Data";
 
 function Login() {
   let navigate = useNavigate();
@@ -63,7 +64,10 @@ function Login() {
           setUuid(userUUID.resultUUID)
 
           setUser(userObj);
-          setAlertMsg("");
+          //setAlertMsg("");     
+
+          Data.SetRouteLog(userObj.resultMessage, "Login", "Main", "ROUTE");
+          
           navigate('/App', { state: {userObj: userObj, uuid: userUUID.resultUUID} });
         });
       }
