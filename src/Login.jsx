@@ -93,10 +93,12 @@ function Login() {
               <label>
                 <p>Username</p>
                 <input
+                style={{ width: "100px"}}
                   type="text"
-                  placeholder="email ID"
+                  placeholder="email"
                   onChange={(e) => setUserId(e.target.value)}
                 />
+                <span>@haeahn.com</span>
               </label>
               <label>
                 <p>Password</p>
