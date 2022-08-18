@@ -94,6 +94,7 @@ function Login() {
                 <p>Username</p>
                 <input
                   type="text"
+                  placeholder="email ID"
                   onChange={(e) => setUserId(e.target.value)}
                 />
               </label>
