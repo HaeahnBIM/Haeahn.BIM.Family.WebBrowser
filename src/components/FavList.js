@@ -10,6 +10,7 @@ import CommentIcon from "@mui/icons-material/Comment";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Snackbar from '@mui/material/Snackbar';
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
@@ -64,7 +65,7 @@ const FavList = (props) => {
       USERID: employeeId,
     };
 
-    console.log("postData", postData)
+    //console.log("postData", postData)
 
     try {
       const res = await fetch(baseuri + "addFavorite", {
@@ -95,9 +96,13 @@ const FavList = (props) => {
   };
 
   const handleListItemClick = (event, value) => {
-    console.log("const handleListItemClick = (event, value)", value.SEQ, selectedFamily);
+    //console.log("const handleListItemClick = (event, value)", value.SEQ, selectedFamily);
     //setSelectedIndex(value.SEQ);
     handleAddFavorite(selectedFamily, value.SEQ);
+
+    console.log('const handleListItemClick = (event, value)', selectedFamily)
+
+    props.handleAddedFav(selectedFamily.NM_FML);
   };
 
   return (

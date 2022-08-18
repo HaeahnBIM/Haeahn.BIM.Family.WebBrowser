@@ -9,16 +9,13 @@ const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 const baseuri2 = "https://ueapi.haeahn.com/api/FamilyAutomation/";
 
 const columnsCentral = [
-  { field: "SEQ", headerName: "ID", width: 60 },
-  { field: "Code", headerName: "Code", width: 100 },
-  { field: "Share", headerName: "Share", width: 300 },
+  { field: "Code", headerName: "Code", width: 200 },
+  { field: "Share", headerName: "Share", width: 400 },
 ];
 
 const columnsModel = [
-  { field: "SEQ", headerName: "SEQ", width: 60 },
-  { field: "Code", headerName: "Code", width: 100 },
   { field: "RevitVersion", headerName: "RevitVersion", width: 100 },
-  { field: "Filepath", headerName: "Filepath", width: 700 },
+  { field: "Filepath", headerName: "Filepath", width: 800 },
 ];
 
 function Central() {
@@ -156,7 +153,7 @@ function Central() {
               divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
             >
-              <Stack width="80%" height="100%" direction={"column"} spacing={2}>
+              <Stack width="100%" height="100%" direction={"column"} spacing={2}>
                 <Stack direction={"row"} spacing={2} margin="5px">
                   <span style={{ width: "100%" }}>Central</span>
                   <Stack
@@ -166,7 +163,7 @@ function Central() {
                     justifyContent="flex-end"
                     alignItems="center"
                   >
-                    <button style={{ height: "25px", width: "80px" }}>
+                    {/* <button style={{ height: "25px", width: "80px" }}>
                       download
                     </button>
                     <button style={{ height: "25px", width: "80px" }}>
@@ -180,14 +177,14 @@ function Central() {
                     </button>
                     <button style={{ height: "25px", width: "100px" }}>
                       delete favorite
-                    </button>
+                    </button> */}
                   </Stack>
                 </Stack>
 
                 <DataGrid
                   rows={central}
                   columns={columnsCentral}
-                  getRowId={(row) => row.Share}
+                  getRowId={(row) => row.ID}
                   rowHeight={_rowHeight}
                   rowsPerPageOptions={[100]}
                   onRowClick={(event) => {
@@ -223,7 +220,7 @@ function Central() {
                     columns={columnsModel}
                     checkboxSelection
                     disableSelectionOnClick 
-                    getRowId={(row) => row.RevitVersion + "|"+ row.Filepath}
+                    getRowId={(row) => row.ID}
                     rowHeight={_rowHeight}
                     rowsPerPageOptions={[100]}
                     onRowClick={(event) => {
@@ -235,14 +232,6 @@ function Central() {
                     selectionModel={selectedModel}
                   />
                 </div>
-              </Stack>
-
-              <Stack direction={"column"} spacing={2} width="400px">
-                <span style={{ margin: "5px" }}>Type</span>
-
-                <span style={{ margin: "10px 5px 5px 5px" }}>
-                  Similar Family
-                </span>
               </Stack>
             </Stack>
           </Stack>

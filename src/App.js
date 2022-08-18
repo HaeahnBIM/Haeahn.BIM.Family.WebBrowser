@@ -27,13 +27,14 @@ import MailIcon from "@mui/icons-material/Mail";
 import Moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Snackbar from "@mui/material/Snackbar";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 
 const columnsFamily = [
   { field: "SEQ", headerName: "ID", width: 60 },
   { field: "NM_CATG", headerName: "NM_CATG", width: 100 },
-  { field: "NM_FML", headerName: "NM_FML", width: 250 },
+  { field: "NM_FML", headerName: "NM_FML", width: 300 },
   { field: "RvtVersion", headerName: "버전", width: 100 },
   { field: "TotalCount", headerName: "총 유리개수", width: 100 },
   { field: "ElevCount", headerName: "유리 짝", width: 100 },
@@ -64,20 +65,25 @@ const columnsSameFamily = [
 ];
 
 const columnsParameter = [
-  { field: "SEQ", headerName: "ID", width: 50 },
-  { field: "ID_REL", headerName: "ID_REL", width: 120 },
-  { field: "JSON_PARAM", headerName: "JSON_PARAM", width: 150 },
+  { field: "ID_REL", headerName: "SEQ", width: 120 },
+  { field: "BuiltInParameter", headerName: "BuiltInParameter", width: 150 },
+  { field: "Name", headerName: "Name", width: 150 },
+  { field: "ParameterGroup", headerName: "ParameterGroup", width: 150 },
+  { field: "ParameterType", headerName: "ParameterType", width: 150 },
 ];
 
 const columnsRelation = [
-  { field: "SEQ", headerName: "ID", width: 50 },
-  { field: "ID_REL", headerName: "ID_REL", width: 120 },
+  { field: "ID_REL", headerName: "SEQ", width: 120 },
   { field: "TYP_REL", headerName: "TYP_REL", width: 150 },
   { field: "VAL_REL", headerName: "VAL_REL", width: 150 },
   { field: "DTL_REL", headerName: "DTL_REL", width: 150 },
   { field: "IS_USE", headerName: "IS_USE", width: 150 },
 ];
 
+const columnsProject = [
+  { field: "CD_PROJ", headerName: "CD_PROJ", width: 150 },
+  { field: "NM_PROJ", headerName: "NM_PROJ", width: 150 },
+];
 const _rowHeight = 30;
 
 function App() {
@@ -111,6 +117,7 @@ function App() {
   const [dataFamily, setFamily] = useState([]);
   const [familyFiltered, setFamilyFiltered] = useState([]);
   const [dataSameFamily, setSameFamily] = useState([]);
+  const [project, setProject] = useState([]);
   const [dataSymbol, setSymbol] = useState([]);
   const [dataSymbolImage, setSymbolImage] = useState("");
   const [dataSymbolImage2, setSymbolImage2] = useState("");
@@ -135,6 +142,13 @@ function App() {
   const [drawerChange, setDrawerChange] = useState(false);
   const [newFavoriteName, setNewFavoriteName] = useState("");
   const [newFavoriteDesc, setNewFavoriteDesc] = useState("");
+  const [msgSnackbar, setMsgSnackbar] = useState("");
+  const [stateSnackbar, setStateSnackbar] = useState({
+    open: false,
+    vertical: "bottom",
+    horizontal: "right",
+  });
+  const { vertical, horizontal, open } = stateSnackbar;
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
@@ -165,6 +179,14 @@ function App() {
       .then((data) => setFamily(data));
   };
 
+  const handlePreviewImageAndSameData = async (e) => {
+    //console.log(e.row);
+    setSymbolImage(e.row.IMG_SYM);
+    handleGetData(e.row);
+    handleGetSameVolmne(e.row);
+    handleProject(e.row);
+  };
+
   const handleGetData = async (e) => {
     const postData = {
       ID_REL: e.SEQ,
@@ -192,18 +214,18 @@ function App() {
         },
         data: data,
       };
-      let symbols = [];
-      for (let i = 0; i < data.length; i++) {
-        const d = data[i];
+      // let symbols = [];
+      // for (let i = 0; i < data.length; i++) {
+      //   const d = data[i];
 
-        symbols.push({
-          SEQ: d.SEQ,
-          ID_REL_FML: d.ID_REL_FML,
-          NM_SYM: d.NM_SYM,
-          IMG_SYM: d.IMG_SYM,
-        });
-      }
-      setSymbol(symbols.map((row) => ({ ...row })));
+      //   symbols.push({
+      //     SEQ: d.SEQ,
+      //     ID_REL_FML: d.ID_REL_FML,
+      //     NM_SYM: d.NM_SYM,
+      //     IMG_SYM: d.IMG_SYM,
+      //   });
+      // }
+      setSymbol(data);
     } catch (err) {
       console.log(err);
     }
@@ -230,28 +252,7 @@ function App() {
         },
         data: data,
       };
-      let parameters = [];
-      for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-
-        parameters.push({
-          SEQ: d.SEQ,
-          ID_REL: d.ID_REL,
-          BuiltInParameter: d.BuiltInParameter,
-          Name: d.Name,
-          ParameterGroup: d.ParameterGroup,
-          ParameterType: d.ParameterType,
-          Formula: d.Formula,
-          IsProject: d.IsProject,
-          IsInstance: d.IsInstance,
-          IsReadOnly: d.IsReadOnly,
-          IsReporting: d.IsReporting,
-          IsShared: d.IsShared,
-          StorageType: d.StorageType,
-          UserModifiable: d.UserModifiable,
-        });
-      }
-      setParameter(parameters.map((row) => ({ ...row })));
+      setParameter(data);
     } catch (err) {
       console.log(err);
     }
@@ -278,21 +279,7 @@ function App() {
         },
         data: data,
       };
-      let relations = [];
-      for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-
-        relations.push({
-          SEQ: d.SEQ,
-          ID_REL: d.ID_REL,
-          TYP_REL: d.TYP_REL,
-          VAL_REL: d.VAL_REL,
-          DTL_REL: d.DTL_REL,
-          IS_USE: d.IS_USE,
-          ID_ELEM: d.ID_ELEM,
-        });
-      }
-      setRelation(relations.map((row) => ({ ...row })));
+      setRelation(data);
     } catch (err) {
       console.log(err);
     }
@@ -332,11 +319,37 @@ function App() {
     }
   };
 
-  const handlePreviewImageAndSameData = async (e) => {
-    //console.log(e.row);
-    setSymbolImage(e.row.IMG_SYM);
-    handleGetData(e.row);
-    handleGetSameVolmne(e.row);
+  const handleProject = async (e) => {
+    const postData = {
+      ID_REL: e.SEQ
+    };
+
+    try {
+      const res = await fetch(baseuri + "project", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res.json();
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      setProject(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handlePreviewImage = async (e) => {
@@ -398,7 +411,7 @@ function App() {
       SEQ: selectionModel[0],
     };
 
-    console.log(postData);
+    //console.log(postData);
 
     try {
       const res = await fetch(baseuri + "stdd", {
@@ -413,10 +426,13 @@ function App() {
         const message = `An error has occured: ${res.status} - ${res.statusText}`;
         throw new Error(message);
       }
+      const data = await res.json();
       fetchTableFamily();
+      handleShowSnackbar(data[0].IS_STDD ? "표준 패밀리로 변경하였습니다." : "일반 패밀리로 변경하였습니다.")
     } catch (err) {
       console.log(err);
     }
+
   };
 
   const handleDownload = async () => {
@@ -588,8 +604,6 @@ function App() {
       TYP: "CATEGORY",
     };
 
-    console.log(postData);
-
     try {
       const res = await fetch(baseuri + "addReport", {
         method: "POST",
@@ -613,8 +627,6 @@ function App() {
       ID: selectionModel[0],
       USERID: employeeId,
     };
-
-    console.log(postData);
 
     try {
       const res = await fetch(baseuri + "like", {
@@ -985,13 +997,15 @@ function App() {
       const f = filter.key;
 
       let val = true;
-      if (f === "stdd"){
-          val = true;
-      }else{
+      if (f === "stdd") {
+        val = true;
+      } else {
         val = false;
       }
 
-      filtered = filtered.concat(filteredFamilies.filter((data) => data.IsStdd === val));
+      filtered = filtered.concat(
+        filteredFamilies.filter((data) => data.IsStdd === val)
+      );
     }
     //console.log(filtered)
 
@@ -1005,13 +1019,15 @@ function App() {
       const filter = filters[i];
       const f = filter.value;
 
-      filtered = filtered.concat(filteredFamilies.filter((data) => {
-        if (data.RvtVersion !== null) {
-          if (data.RvtVersion.includes(f)) {
-            return data;
+      filtered = filtered.concat(
+        filteredFamilies.filter((data) => {
+          if (data.RvtVersion !== null) {
+            if (data.RvtVersion.includes(f)) {
+              return data;
+            }
           }
-        }
-      }));
+        })
+      );
     }
     //console.log(filtered)
 
@@ -1102,7 +1118,11 @@ function App() {
         //onClick={toggleDrawer(anchor, false)}
         //onKeyDown={toggleDrawer(anchor, false)}
       >
-        <FavList selectedFamily={data} employeeId={employeeId} />
+        <FavList
+          selectedFamily={data}
+          employeeId={employeeId}
+          handleAddedFav={handleAddedFav}
+        />
       </Box>
     );
   }
@@ -1180,6 +1200,33 @@ function App() {
     setNewFavoriteDesc("");
   };
 
+  const handleAddedFav = (name) => {
+    setState({ ...state, ["right"]: false });
+    setDrawerChange(false);
+
+    handleShowSnackbar("'" + name + "' 즐겨찾기 추가 완료")
+  };
+
+  const handleShowSnackbar = (msg)=> {
+    setMsgSnackbar(msg);
+
+    setStateSnackbar({
+      open: true,
+      ...{
+        vertical: "bottom",
+        horizontal: "right",
+      },
+    });
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setStateSnackbar({ ...stateSnackbar, open: false });
+  };
+
   return (
     <div style={{ margin: "10px" }}>
       <main>
@@ -1188,7 +1235,7 @@ function App() {
           divider={<Divider orientation="vertical" flexItem />}
           spacing={2}
         >
-          <Stack spacing={1} width="250px">
+          <Stack spacing={1} width="200px">
             <div onChange={handleChangeStdd}>
               <Filter filterList={stddFilter} filterName="구분"></Filter>
             </div>
@@ -1264,7 +1311,7 @@ function App() {
               divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
             >
-              <Stack width="80%" height="100%" direction={"column"} spacing={2}>
+              <Stack width="100%" height="100%" direction={"column"} spacing={2}>
                 <Stack direction={"row"} spacing={2} margin="5px">
                   <span style={{ width: "100%" }}>Family</span>
                   <Stack
@@ -1345,41 +1392,48 @@ function App() {
                   />
                 )}
 
-                <Stack direction={"row"} spacing={2} margin="5px">
-                  <span style={{ width: "100%" }}>Equal Volume</span>
-
                   <Stack
+                    style={{ height: "300px", width:"100%" }}
+                    margin="5px"
                     direction={"row"}
                     spacing={2}
-                    display="flex"
-                    justifyContent="flex-end"
+                    divider={<Divider orientation="vertical" flexItem />}
                   >
-                    <button onClick={onRemove} style={{ height: "25px" }}>
-                      delete
-                    </button>
+                    <Stack direction={"column"} spacing={2} width="100%">
+                      <span >Relation</span>
+                      <DataGrid
+                        rows={dataRelation}
+                        columns={columnsRelation}
+                        getRowId={(row) => row.id}
+                        rowHeight={_rowHeight}
+                        rowsPerPageOptions={[100]}
+                      />
+                    </Stack>
+                    <Stack direction={"column"} spacing={2} width="100%">
+                      <span >Parameter</span>
+                      <DataGrid
+                        rows={dataParameter}
+                        columns={columnsParameter}
+                        getRowId={(row) => row.id}
+                        rowHeight={_rowHeight}
+                        rowsPerPageOptions={[100]}
+                      />
+                    </Stack>
                   </Stack>
-                </Stack>
-
-                <div style={{ height: "200px" }}>
-                  <DataGrid
-                    rows={dataSameFamily}
-                    columns={columnsSameFamily}
-                    getRowId={(row) => row.SEQ}
-                    rowHeight={_rowHeight}
-                    rowsPerPageOptions={[100]}
-                    onRowClick={handlePreviewImage}
-                    checkboxSelection
-                    //checkboxSelection={checkboxSelection}
-                    onSelectionModelChange={(sel) => {
-                      setSelectionSameModel(sel);
-                    }}
-                    selectionModel={selectionSameModel}
-                  />
-                </div>
               </Stack>
 
-              <Stack direction={"column"} spacing={2} width="400px">
-                <span style={{ margin: "5px" }}>Type</span>
+              <Stack direction={"column"} spacing={2} width="350px">
+                <Stack direction={"row"} spacing={2} margin="10px 0px 20px 0px">
+                  <img
+                    src={`data:image/png;base64,${dataSymbolImage}`}
+                    width="200"
+                    height="200"
+                    alt=""
+                  />
+                </Stack>
+                <span style={{ margin: "10px 5px 5px 5px" }}>
+                  Type
+                </span>
                 <DataGrid
                   getRowId={(row) => row.SEQ}
                   rows={dataSymbol}
@@ -1387,33 +1441,16 @@ function App() {
                   rowHeight={_rowHeight}
                   pageSize={100}
                 />
-                {/* <span style={{ margin: "5px" }}>Patameter</span>
+                <span style={{ margin: "10px 5px 5px 5px" }}>
+                  Project
+                </span>
                 <DataGrid
-                  getRowId={(row) => row.SEQ}
-                  rows={dataParameter}
-                  columns={columnsParameter}
+                  getRowId={(row) => row.ID}
+                  rows={project}
+                  columns={columnsProject}
                   rowHeight={_rowHeight}
                   pageSize={100}
-                /> */}
-
-                <span style={{ margin: "10px 5px 5px 5px" }}>
-                  Similar Family
-                </span>
-
-                <Stack height="20%" direction={"row"} spacing={2}>
-                  <img
-                    src={`data:image/png;base64,${dataSymbolImage}`}
-                    width="150"
-                    height="150"
-                    alt=""
-                  />
-                  <img
-                    src={`data:image/png;base64,${dataSymbolImage2}`}
-                    width="150"
-                    height="150"
-                    alt=""
-                  />
-                </Stack>
+                />
               </Stack>
             </Stack>
           </Stack>
@@ -1525,6 +1562,16 @@ function App() {
             </Stack>
           </Drawer>
         </React.Fragment>
+      </div>
+      <div>
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={open}
+          onClose={handleClose}
+          autoHideDuration={3000}
+          message={msgSnackbar}
+          key={vertical + horizontal}
+        />
       </div>
     </div>
   );

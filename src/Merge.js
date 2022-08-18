@@ -27,6 +27,21 @@ const columnsFamily = [
   { field: "IsNG", headerName: "품질", width: 80 },
 ];
 
+const columnsSameFamily = [
+  { field: "SEQ", headerName: "ID", width: 80 },
+  { field: "NM_CATG", headerName: "NM_CATG", width: 120 },
+  { field: "NM_FML", headerName: "NM_FML", width: 300 },
+  { field: "VOL", headerName: "VOL", width: 300 },
+  { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
+];
+
+const columnsSymbol = [
+  { field: "SEQ", headerName: "ID", width: 60 },
+  { field: "ID_REL_FML", headerName: "ID_REL_FML", width: 120, hide: true },
+  { field: "NM_SYM", headerName: "NM_SYM", width: 200 },
+  { field: "IMG_SYM", headerName: "IMG_SYM", width: 300, hide: true },
+];
+
 const columnsReport = [
   { field: "SEQ", headerName: "SEQ", width: 60 },
   { field: "ID_FML", headerName: "ID_FML", width: 100 },
@@ -48,6 +63,11 @@ function Merge() {
   const [filterCondition, setFilterCondition] = useState(Dummy["중복조건"]);
   const [selectionModel, setSelectionModel] = useState([]);
   const [selectionSameModel, setSelectionSameModel] = useState([]);
+  const [dataSymbol, setSymbol] = useState([]);
+  const [dataParameter, setParameter] = useState([]);
+  const [dataRelation, setRelation] = useState([]);
+  const [dataSymbolImage, setSymbolImage] = useState("");
+  const [dataSymbolImage2, setSymbolImage2] = useState("");
 
   const _rowHeight = 30;
 
@@ -184,6 +204,184 @@ function Merge() {
     console.log(JSON.stringify(postData))
   };
 
+  const handlePreviewImageAndSameData = async (e) => {
+    //console.log(e.row);
+    setSymbolImage(e.row.IMG_SYM);
+    handleGetData(e.row);
+    handleGetSameVolmne(e.row);
+  };
+
+  const handlePreviewImage = async (e) => {
+    setSymbolImage2(e.row.IMG_SYM);
+  };
+
+  const handleGetData = async (e) => {
+    const postData = {
+      ID_REL: e.SEQ,
+    };
+
+    try {
+      const res = await fetch(baseuri + "symbols", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res.json();
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      let symbols = [];
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i];
+
+        symbols.push({
+          SEQ: d.SEQ,
+          ID_REL_FML: d.ID_REL_FML,
+          NM_SYM: d.NM_SYM,
+          IMG_SYM: d.IMG_SYM,
+        });
+      }
+      setSymbol(symbols.map((row) => ({ ...row })));
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      const res = await fetch(baseuri + "parameters", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res.json();
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      let parameters = [];
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i];
+
+        parameters.push({
+          SEQ: d.SEQ,
+          ID_REL: d.ID_REL,
+          BuiltInParameter: d.BuiltInParameter,
+          Name: d.Name,
+          ParameterGroup: d.ParameterGroup,
+          ParameterType: d.ParameterType,
+          Formula: d.Formula,
+          IsProject: d.IsProject,
+          IsInstance: d.IsInstance,
+          IsReadOnly: d.IsReadOnly,
+          IsReporting: d.IsReporting,
+          IsShared: d.IsShared,
+          StorageType: d.StorageType,
+          UserModifiable: d.UserModifiable,
+        });
+      }
+      setParameter(parameters.map((row) => ({ ...row })));
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      const res = await fetch(baseuri + "relations", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res.json();
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      let relations = [];
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i];
+
+        relations.push({
+          SEQ: d.SEQ,
+          ID_REL: d.ID_REL,
+          TYP_REL: d.TYP_REL,
+          VAL_REL: d.VAL_REL,
+          DTL_REL: d.DTL_REL,
+          IS_USE: d.IS_USE,
+          ID_ELEM: d.ID_ELEM,
+        });
+      }
+      setRelation(relations.map((row) => ({ ...row })));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleGetSameVolmne = async (e) => {
+    const postData = {
+      ID: e.SEQ,
+      RATIO: 0.001,
+    };
+
+    try {
+      const res = await fetch(baseuri + "findSameVol", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+      if (!res.ok) {
+        const message = `An error has occured: ${res.status} - ${res.statusText}`;
+        throw new Error(message);
+      }
+      const data = await res.json();
+      const result = {
+        status: res.status + "-" + res.statusText,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type"),
+          "Content-Length": res.headers.get("Content-Length"),
+        },
+        data: data,
+      };
+      setSameFamily(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div style={{ margin: "10px" }}>
       <main>
@@ -224,26 +422,6 @@ function Merge() {
             spacing={2}
           >
             <Stack
-              direction={"row"}
-              spacing={2}
-              display="flex"
-              justifyContent="flex-end"
-            >
-              <button style={{ height: "30px", margin: "5px", width: "80px" }}>
-                검색
-              </button>
-              <button style={{ height: "30px", margin: "5px", width: "80px" }}>
-                내 정보
-              </button>
-              <button style={{ height: "30px", margin: "5px", width: "80px" }}>
-                신고목록
-              </button>
-              <button style={{ height: "30px", margin: "5px", width: "80px" }}>
-                중복관리
-              </button>
-            </Stack>
-
-            <Stack
               height="80%"
               style={{ margin: "10px" }}
               direction={"row"}
@@ -265,15 +443,6 @@ function Merge() {
                     <button style={{ height: "25px", width: "80px" }}>
                       report
                     </button>
-                    <button style={{ height: "25px", width: "80px" }}>
-                      like
-                    </button>
-                    <button style={{ height: "25px", width: "100px" }}>
-                      add favorite
-                    </button>
-                    <button style={{ height: "25px", width: "100px" }}>
-                      delete favorite
-                    </button>
                   </Stack>
                 </Stack>
 
@@ -283,6 +452,8 @@ function Merge() {
                   getRowId={(row) => row.SEQ}
                   rowHeight={_rowHeight}
                   rowsPerPageOptions={[100]}
+                  onRowClick={handlePreviewImageAndSameData}
+                  //checkboxSelection
                   onSelectionModelChange={(newSelectionModel) => {
                     setSelectionModel(newSelectionModel);
                   }}
@@ -297,17 +468,69 @@ function Merge() {
                     spacing={2}
                     display="flex"
                     justifyContent="flex-end"
-                  ></Stack>
+                  >
+                  <button style={{ height: "25px" }}>
+                    delete
+                  </button>
+
+                  </Stack>
                 </Stack>
 
-                <div style={{ height: "200px" }}></div>
+                
+                <div style={{ height: "200px" }}>
+                  <DataGrid
+                    rows={dataSameFamily}
+                    columns={columnsSameFamily}
+                    getRowId={(row) => row.SEQ}
+                    rowHeight={_rowHeight}
+                    rowsPerPageOptions={[100]}
+                    onRowClick={handlePreviewImage}
+                    checkboxSelection
+                    //checkboxSelection={checkboxSelection}
+                    onSelectionModelChange={(sel) => {
+                      setSelectionSameModel(sel);
+                    }}
+                    selectionModel={selectionSameModel}
+                  />
+                </div>
               </Stack>
 
               <Stack direction={"column"} spacing={2} width="400px">
                 <span style={{ margin: "5px" }}>Type</span>
+                <DataGrid
+                  getRowId={(row) => row.SEQ}
+                  rows={dataSymbol}
+                  columns={columnsSymbol}
+                  rowHeight={_rowHeight}
+                  pageSize={100}
+                />
+                {/* <span style={{ margin: "5px" }}>Patameter</span>
+                <DataGrid
+                  getRowId={(row) => row.SEQ}
+                  rows={dataParameter}
+                  columns={columnsParameter}
+                  rowHeight={_rowHeight}
+                  pageSize={100}
+                /> */}
+
                 <span style={{ margin: "10px 5px 5px 5px" }}>
                   Similar Family
                 </span>
+
+                <Stack height="20%" direction={"row"} spacing={2}>
+                  <img
+                    src={`data:image/png;base64,${dataSymbolImage}`}
+                    width="150"
+                    height="150"
+                    alt=""
+                  />
+                  <img
+                    src={`data:image/png;base64,${dataSymbolImage2}`}
+                    width="150"
+                    height="150"
+                    alt=""
+                  />
+                </Stack>
               </Stack>
             </Stack>
           </Stack>
