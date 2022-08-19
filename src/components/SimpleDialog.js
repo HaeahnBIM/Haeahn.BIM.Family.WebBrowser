@@ -17,6 +17,7 @@ import Data from "../api/Data";
 const orderType = ["upgrade"];
 
 const baseuri = "https://ueapi.haeahn.com/api/FamilyAutomation/";
+const baseuri_debug = "http://localhost:5059/api/FamilyAutomation/";
 
 export default function SimpleDialog(props) {
   const { onClose, selectedValue, open, selectedFav, userId } = props;
@@ -34,14 +35,14 @@ export default function SimpleDialog(props) {
   const postOrder = async (adn) => {
 
     const postData = {
-      SEQ: selectedFav,
+      SEQ_FAV: selectedFav,
       TYP_ADN: adn,
       ID_USER_ORDR: userId,
       CONTENT: JSON.stringify({ version: "2023" }),
     };
 
     try {
-      const response = await fetch(baseuri + "setOrder", {
+      const response = await fetch(baseuri_debug + "setOrder", {
         method: "POST",
         mode: "cors",
         headers: {

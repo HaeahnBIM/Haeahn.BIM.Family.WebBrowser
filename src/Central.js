@@ -7,6 +7,7 @@ import Dummy from "./api/Dummy.json";
 
 const baseuri = "https://ueapi.haeahn.com/api/RvtCollection/";
 const baseuri2 = "https://ueapi.haeahn.com/api/FamilyAutomation/";
+const baseuri_debug = "http://localhost:5059/api/FamilyAutomation/";
 
 const columnsCentral = [
   { field: "Code", headerName: "Code", width: 200 },
@@ -100,13 +101,11 @@ function Central() {
 
   const handleExtractFamily = async (event) => {
 
-    const postData = {
+   const postData = {
       TYP_ADN: "extractfamily",
-      MODEL_PATH: selectedModel,
-      ID_USER_ORDR: employeeId
+      SELECTED_MODELS: selectedModel,
+      ID_USER_ORDR: employeeId,
     };
-
-    console.log(JSON.stringify(postData))
 
     try {
       const response = await fetch(baseuri2 + "setOrder", {
@@ -153,7 +152,12 @@ function Central() {
               divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
             >
-              <Stack width="100%" height="100%" direction={"column"} spacing={2}>
+              <Stack
+                width="100%"
+                height="100%"
+                direction={"column"}
+                spacing={2}
+              >
                 <Stack direction={"row"} spacing={2} margin="5px">
                   <span style={{ width: "100%" }}>Central</span>
                   <Stack
@@ -219,17 +223,24 @@ function Central() {
                     rows={centralModel}
                     columns={columnsModel}
                     checkboxSelection
-                    disableSelectionOnClick 
+                    disableSelectionOnClick
                     getRowId={(row) => row.ID}
                     rowHeight={_rowHeight}
                     rowsPerPageOptions={[100]}
-                    onRowClick={(event) => {
-                      handleExtractFamily(event);
+                    // onRowClick={(event) => {
+                    //   handleExtractFamily(event);
+                    // }}
+                    onSelectionModelChange={(ids) => {
+                      const selectedIDs = new Set(ids);
+                      const selectedRowData = centralModel.filter((row) =>
+                        selectedIDs.has(row.ID)
+                      );
+                      setSelectedModel(selectedRowData);
                     }}
-                    onSelectionModelChange={(sel) => {
-                      setSelectedModel(sel);
-                    }}
-                    selectionModel={selectedModel}
+                    // onSelectionModelChange={(sel) => {
+                    //   setSelectedModel(sel);
+                    // }}
+                    selectionModel={selectedModel.ID}
                   />
                 </div>
               </Stack>
